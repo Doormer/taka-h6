@@ -1,6 +1,3 @@
-namespace Chat.Domain;
+namespace Chat.Domain.AggregatesModel.ArchiveAggregate;
 
-public class Message
-{
-    
-}
+public record Message(Guid Id, string Msg, DateTime CreatedAt);
