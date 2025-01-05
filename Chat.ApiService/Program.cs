@@ -6,10 +6,6 @@ using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
-#if DEBUG
-    builder.Configuration.AddUserSecrets<Program>();
-#endif
-
 // Add service defaults & Aspire client integrations.
 builder.AddServiceDefaults();
 
