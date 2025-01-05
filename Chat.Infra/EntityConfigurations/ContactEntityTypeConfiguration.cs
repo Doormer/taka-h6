@@ -4,14 +4,14 @@ namespace Chat.Infra.EntityConfigurations;
 
 internal class ContactEntityTypeConfiguration : IEntityTypeConfiguration<Contact>
 {
-    public void Configure(EntityTypeBuilder<Contact> orderConfiguration)
+    public void Configure(EntityTypeBuilder<Contact> contactConfiguration)
     {
-        orderConfiguration.ToTable("contacts");
+        contactConfiguration.ToTable("contacts");
 
-        orderConfiguration.Ignore(b => b.DomainEvents);
+        contactConfiguration.Ignore(b => b.DomainEvents);
 
-        orderConfiguration.Property(o => o.UserId);
-        orderConfiguration.Property(o => o.ContactUserId);
+        contactConfiguration.Property(o => o.UserId);
+        contactConfiguration.Property(o => o.ContactUserId);
         //todo 
         // add db constraint to not allow duplicate entries
         // add FK 

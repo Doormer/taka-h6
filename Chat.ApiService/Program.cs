@@ -38,7 +38,7 @@ var log = new LoggerConfiguration()
           .WriteTo.OpenTelemetry()
           .CreateLogger();
 
-app.MapOrdersApiV1();
+app.MapChatApiV1();
 
 app.MapDefaultEndpoints();
 

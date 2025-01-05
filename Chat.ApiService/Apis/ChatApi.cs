@@ -8,10 +8,11 @@ namespace Chat.ApiService.Apis;
 
 public static class ChatApi
 {
-    public static RouteGroupBuilder MapOrdersApiV1(this IEndpointRouteBuilder app)
+    public static RouteGroupBuilder MapChatApiV1(this IEndpointRouteBuilder app)
     {
         var api = app.MapGroup("api/chat");
-        //todo setup API versioning
+        //todo
+        //setup API versioning
 
         api.MapPost("/contact", AddContactAsync);
 
