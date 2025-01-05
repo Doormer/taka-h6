@@ -18,7 +18,8 @@ public class AddContactCommandHandler(
     public async Task<bool> Handle(AddContactCommand message, CancellationToken cancellationToken)
     {
         var reciprocalContact = new ReciprocalContact(message.UserId, message.UserContactId);
-
+        //todo
+        //check whether the contact is already added
         _logger.LogInformation("AddingContact - contact: {@contact}", reciprocalContact);
         _reciprocalContactRepo.Add(reciprocalContact);
 
