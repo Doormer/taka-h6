@@ -1,6 +1,7 @@
 ﻿using Chat.Domain.AggregateModels.ReciprocalContactAggregate;
 using Chat.Domain.SeedWork;
 using System.Linq;
+using Microsoft.EntityFrameworkCore;
 
 namespace Chat.Infra.Repositories;
 
@@ -24,5 +25,13 @@ public class ReciprocalContactRepo(ChatContext context) : IReciprocalContactRepo
     public void Delete(ReciprocalContact reciprocalContact)
     {
         throw new NotImplementedException();
+    }
+
+    public async Task<ReciprocalContact?> FindByUserIdAndContactIdAsync(Guid userId, Guid contactId)
+    {
+        return await _context.ReciprocalContacts
+            .FirstOrDefaultAsync(c => 
+                (c.UserId == userId && c.UserContactId == contactId) ||
+                (c.UserId == contactId && c.UserContactId == userId));
     }
 }

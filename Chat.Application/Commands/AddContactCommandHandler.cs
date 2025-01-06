@@ -17,9 +17,21 @@ public class AddContactCommandHandler(
 
     public async Task<bool> Handle(AddContactCommand message, CancellationToken cancellationToken)
     {
+        // Check if contact already exists
+        var existingContact = await _reciprocalContactRepo.FindByUserIdAndContactIdAsync(
+            message.UserId, 
+            message.UserContactId);
+
+        if (existingContact is not null)
+        {
+            _logger.LogInformation(
+                "Contact already exists between users {UserId} and {ContactId}", 
+                message.UserId, 
+                message.UserContactId);
+            return true; // Return true as this case should not be treated as an error
+        }
+
         var reciprocalContact = new ReciprocalContact(message.UserId, message.UserContactId);
-        //todo
-        //check whether the contact is already added
         _logger.LogInformation("AddingContact - contact: {@contact}", reciprocalContact);
         _reciprocalContactRepo.Add(reciprocalContact);
 

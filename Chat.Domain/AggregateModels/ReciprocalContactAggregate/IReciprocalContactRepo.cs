@@ -7,4 +7,5 @@ public interface IReciprocalContactRepo : IRepository<ReciprocalContact>
     Task<ReciprocalContact?> FindAsync(Guid userId, Guid contactUserId);
     void Add(ReciprocalContact reciprocalContact);
     void Delete(ReciprocalContact reciprocalContact);
+    Task<ReciprocalContact?> FindByUserIdAndContactIdAsync(Guid userId, Guid contactId);
 }
