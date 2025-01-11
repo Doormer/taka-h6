@@ -1,5 +1,6 @@
 ﻿using Chat.Application.Queries;
 using Chat.Application.Behaviors;
+using Chat.Domain.AggregateModels.ArchiveContactAggregate;
 using Chat.Domain.AggregateModels.ReciprocalContactAggregate;
 using Chat.Infra;
 using Chat.Infra.Idempotency;
@@ -43,6 +44,7 @@ internal static class Extensions
         // services.AddSingleton<IValidator<AddContactCommand>, AddContactCommandValidator>();
 
         services.AddScoped<IReciprocalContactRepo, ReciprocalContactRepo>();
+        services.AddScoped<IArchiveContactRepo, ArchiveContactRepo>();
         services.AddScoped<IRequestManager, RequestManager>();
         services.AddScoped<IChatQueries, ChatQueries>();
     }

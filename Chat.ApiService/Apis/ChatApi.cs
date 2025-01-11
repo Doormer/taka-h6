@@ -14,7 +14,9 @@ public static class ChatApi
         //todo
         //setup API versioning
 
-        api.MapPost("/contact", AddContactAsync);
+        api.MapPost("/create-contact", AddContactAsync);
+        api.MapPost("/archive-contact", ArchiveContactAsync);
+
 
         return api;
     }
@@ -29,6 +31,7 @@ public static class ChatApi
         // {
         //     return TypedResults.BadRequest("Empty GUID is not valid for request ID");
         // }
+        // Domain drive design + Command Query responsibility Seperation (CQRS 
 
         var requestAddContact= new AddContactCommand(command.UserId, command.UserContactId);
 
@@ -38,6 +41,26 @@ public static class ChatApi
             requestAddContact);
 
         var commandResult = await services.Mediator.Send(requestAddContact);
+
+        if (!commandResult)
+        {
+            return TypedResults.Problem(detail: "Add contact failed to process.", statusCode: 500);
+        }
+
+        return TypedResults.Ok();
+    }
+
+    public static async Task<Results<Ok, BadRequest<string>, ProblemHttpResult>> ArchiveContactAsync(
+        //TODO handle idempotency [FromHeader(Name = "x-requestid")] Guid requestId,
+        ArchiveContactCommand command,
+        [AsParameters] ChatServices services)
+    {
+        services.Logger.LogInformation(
+            "Sending command: {CommandName} ({@Command})",
+            command.GetGenericTypeName(),
+            command);
+
+        var commandResult = await services.Mediator.Send(command);
 
         if (!commandResult)
         {

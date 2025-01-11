@@ -19,7 +19,11 @@ public class ChatContext : DbContext, IUnitOfWork
         Debug.WriteLine("ChatContext::ctor ->" + GetHashCode());
     }
 
-    public DbSet<Contact> contacts { get; set; }
+    public DbSet< Chat.Domain.AggregateModels.ReciprocalContactAggregate.Contact> ReciprocalContacts { get; set; }
+    public DbSet< Chat.Domain.AggregateModels.ArchiveContactAggregate.ArchiveContact> ArchiveContacts { get; set; }
+    
+    public DbSet< Chat.Domain.AggregateModels.ArchiveContactAggregate.Contact> Contacts { get; set; }
+
 
     public bool HasActiveTransaction => _currentTransaction != null;
 
@@ -47,7 +51,9 @@ public class ChatContext : DbContext, IUnitOfWork
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.ApplyConfiguration(new ContactEntityTypeConfiguration());
+        modelBuilder.ApplyConfiguration(new  EntityConfigurations.ReciprocalContactAggregate.ContactEntityTypeConfiguration());
+        modelBuilder.ApplyConfiguration(new EntityConfigurations.ArchiveContactAggregate.ContactEntityTypeConfiguration());
+        modelBuilder.ApplyConfiguration(new EntityConfigurations.ArchiveContactAggregate.ArchiveContactEntityTypeConfiguration());
     }
 
     public async Task<IDbContextTransaction> BeginTransactionAsync()
