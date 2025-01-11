@@ -15,12 +15,8 @@ public static class ChatApi
         //setup API versioning
 
         api.MapPost("/create-contact", AddContactAsync);
-        api.MapPost("/verify-contact", AddContactAsync);
-        api.MapPost("/modify-contact", AddContactAsync);
-        // POST PUT DELETE GET
-        // POST contact -> Create a contact
-        // PUT contatc -> modify
-        //V
+        api.MapPost("/archive-contact", ArchiveContactAsync);
+
 
         return api;
     }
@@ -45,6 +41,26 @@ public static class ChatApi
             requestAddContact);
 
         var commandResult = await services.Mediator.Send(requestAddContact);
+
+        if (!commandResult)
+        {
+            return TypedResults.Problem(detail: "Add contact failed to process.", statusCode: 500);
+        }
+
+        return TypedResults.Ok();
+    }
+
+    public static async Task<Results<Ok, BadRequest<string>, ProblemHttpResult>> ArchiveContactAsync(
+        //TODO handle idempotency [FromHeader(Name = "x-requestid")] Guid requestId,
+        ArchiveContactCommand command,
+        [AsParameters] ChatServices services)
+    {
+        services.Logger.LogInformation(
+            "Sending command: {CommandName} ({@Command})",
+            command.GetGenericTypeName(),
+            command);
+
+        var commandResult = await services.Mediator.Send(command);
 
         if (!commandResult)
         {

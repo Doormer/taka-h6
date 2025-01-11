@@ -3,8 +3,8 @@ namespace Chat.Domain.AggregateModels.ArchiveContactAggregate;
 /// <summary>
 /// 
 /// </summary>
-public interface IArchiveContactRepo
+public interface IArchiveContactRepo : IRepository<ArchiveContact>
 {
     Task<Contact?> FindContactAsync(Guid userId, Guid contactUserId);
-    void UpdateArchiveStatusAsync(Guid contactId, bool isArchived);
+    void UpdateArchiveStatus(Contact contact);
 }
