@@ -18,7 +18,7 @@ public class ReciprocalContactRepo(ChatContext context) : IReciprocalContactRepo
     public void Add(ReciprocalContact reciprocalContact)
     {
         var contacts = reciprocalContact.GetReciprocalContact();
-        _context.contacts.AddRange(contacts.Item1, contacts.Item2);
+        _context.ReciprocalContacts.AddRange(contacts.Item1, contacts.Item2);
     }
 
     public void Delete(ReciprocalContact reciprocalContact)
