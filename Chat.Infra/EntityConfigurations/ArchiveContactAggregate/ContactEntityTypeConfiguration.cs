@@ -8,10 +8,7 @@ internal class ContactEntityTypeConfiguration : IEntityTypeConfiguration<Contact
     {
         contactConfiguration.ToTable("contacts");
 
-        contactConfiguration.Ignore(c => c.DomainEvents);
-        
 
-        // add db constraint to not allow duplicate entries
         // add FK 
     }
 }
