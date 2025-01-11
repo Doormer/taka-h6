@@ -14,7 +14,13 @@ public static class ChatApi
         //todo
         //setup API versioning
 
-        api.MapPost("/contact", AddContactAsync);
+        api.MapPost("/create-contact", AddContactAsync);
+        api.MapPost("/verify-contact", AddContactAsync);
+        api.MapPost("/modify-contact", AddContactAsync);
+        // POST PUT DELETE GET
+        // POST contact -> Create a contact
+        // PUT contatc -> modify
+        //V
 
         return api;
     }
@@ -29,6 +35,7 @@ public static class ChatApi
         // {
         //     return TypedResults.BadRequest("Empty GUID is not valid for request ID");
         // }
+        // Domain drive design + Command Query responsibility Seperation (CQRS 
 
         var requestAddContact= new AddContactCommand(command.UserId, command.UserContactId);
 

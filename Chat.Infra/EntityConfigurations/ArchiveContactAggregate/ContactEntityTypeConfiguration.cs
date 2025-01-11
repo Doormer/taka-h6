@@ -1,6 +1,6 @@
-﻿using Chat.Domain.AggregateModels.ReciprocalContactAggregate;
+using Chat.Domain.AggregateModels.ArchiveContactAggregate;
 
-namespace Chat.Infra.EntityConfigurations;
+namespace Chat.Infra.EntityConfigurations.ArchiveContactAggregate;
 
 internal class ContactEntityTypeConfiguration : IEntityTypeConfiguration<Contact>
 {
@@ -8,10 +8,10 @@ internal class ContactEntityTypeConfiguration : IEntityTypeConfiguration<Contact
     {
         contactConfiguration.ToTable("contacts");
 
-        contactConfiguration.Ignore(b => b.DomainEvents);
-
-        contactConfiguration.Property(o => o.UserId);
-        contactConfiguration.Property(o => o.ContactUserId);
+        contactConfiguration.Ignore(c => c.DomainEvents);
+        ;
+        contactConfiguration.Property(c => c.ContactUserId);
+        contactConfiguration.Property(c => c.IsArchived);
         //todo 
         // add db constraint to not allow duplicate entries
         // add FK 
