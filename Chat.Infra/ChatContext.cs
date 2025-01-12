@@ -20,6 +20,7 @@ public class ChatContext : DbContext, IUnitOfWork
     }
 
     public DbSet<Contact> contacts { get; set; }
+    public DbSet<ReciprocalContact> ReciprocalContacts { get; set; }
 
     public bool HasActiveTransaction => _currentTransaction != null;
 

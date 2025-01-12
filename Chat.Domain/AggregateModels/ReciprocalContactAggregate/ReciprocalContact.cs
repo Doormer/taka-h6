@@ -2,9 +2,18 @@ using Chat.Domain.SeedWork;
 
 namespace Chat.Domain.AggregateModels.ReciprocalContactAggregate;
 
-public class ReciprocalContact(Guid userId, Guid contactUserId) : Entity, IAggregateRoot
+public class ReciprocalContact : Entity, IAggregateRoot
 {
-    private Contact _contact  = new(userId, contactUserId);
+    public Guid UserId { get; private set; }
+    public Guid UserContactId { get; private set; }
+    private Contact _contact;
+
+    public ReciprocalContact(Guid userId, Guid contactId)
+    {
+        UserId = userId;
+        UserContactId = contactId;
+        _contact = new Contact(userId, contactId);
+    }
 
     public (Contact, Contact) GetReciprocalContact()
     {

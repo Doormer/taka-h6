@@ -35,6 +35,8 @@ var log = new LoggerConfiguration()
           .CreateLogger();
 
 app.MapChatApiV1();
+// Uncomment when V2 is needed
+// app.MapChatApiV2();
 
 app.MapDefaultEndpoints();
 
