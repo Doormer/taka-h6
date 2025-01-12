@@ -1,5 +1,7 @@
+using Projects;
+
 var builder = DistributedApplication.CreateBuilder(args);
 
-builder.AddProject<Projects.Chat_ApiService>("apiservice");
+builder.AddProject<Chat_ApiService>("apiservice");
 
 builder.Build().Run();

@@ -1,5 +1,4 @@
-﻿
-using Chat.Infra;
+﻿using Chat.Infra;
 
 namespace Chat.Application.Queries;
 

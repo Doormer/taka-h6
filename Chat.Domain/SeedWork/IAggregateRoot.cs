@@ -1,3 +1,5 @@
 ﻿namespace Chat.Domain.SeedWork;
 
-public interface IAggregateRoot { }
+public interface IAggregateRoot
+{
+}

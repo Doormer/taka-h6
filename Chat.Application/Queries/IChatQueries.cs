@@ -1,5 +1,4 @@
-﻿
-namespace Chat.Application.Queries;
+﻿namespace Chat.Application.Queries;
 
 public interface IChatQueries
 {

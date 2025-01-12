@@ -1,6 +1,5 @@
 ﻿using Chat.Domain.AggregateModels.ReciprocalContactAggregate;
 using Chat.Domain.SeedWork;
-using System.Linq;
 
 namespace Chat.Infra.Repositories;
 
@@ -11,7 +10,7 @@ public class ReciprocalContactRepo(ChatContext context) : IReciprocalContactRepo
     public IUnitOfWork UnitOfWork => _context;
 
     public Task<ReciprocalContact?> FindAsync(Guid userId, Guid contactUserId)
-    {   
+    {
         throw new NotImplementedException();
     }
 

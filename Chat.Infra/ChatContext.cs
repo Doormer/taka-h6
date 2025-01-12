@@ -1,7 +1,10 @@
-﻿using Chat.Domain.AggregateModels.ReciprocalContactAggregate;
+﻿using Chat.Domain.AggregateModels.ContactArchivalAggregate;
 using Chat.Domain.SeedWork;
-using Chat.Infra.EntityConfigurations;
+using Chat.Infra.EntityConfigurations.ArchiveContactAggregate;
 using System.Diagnostics;
+using Contact = Chat.Domain.AggregateModels.ReciprocalContactAggregate.Contact;
+using ContactEntityTypeConfiguration =
+    Chat.Infra.EntityConfigurations.ReciprocalContactAggregate.ContactEntityTypeConfiguration;
 
 namespace Chat.Infra;
 
@@ -15,14 +18,14 @@ public class ChatContext : DbContext, IUnitOfWork
     public ChatContext(DbContextOptions<ChatContext> options, IMediator mediator) : base(options)
     {
         _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
-    
+
         Debug.WriteLine("ChatContext::ctor ->" + GetHashCode());
     }
 
-    public DbSet< Chat.Domain.AggregateModels.ReciprocalContactAggregate.Contact> ReciprocalContacts { get; set; }
-    public DbSet< Chat.Domain.AggregateModels.ArchiveContactAggregate.ArchiveContact> ArchiveContacts { get; set; }
-    
-    public DbSet< Chat.Domain.AggregateModels.ArchiveContactAggregate.Contact> Contacts { get; set; }
+    public DbSet<Contact> ReciprocalContacts { get; set; }
+    public DbSet<ContactArchival> ArchiveContacts { get; set; }
+
+    public DbSet<Domain.AggregateModels.ContactArchivalAggregate.Contact> Contacts { get; set; }
 
 
     public bool HasActiveTransaction => _currentTransaction != null;
@@ -51,9 +54,10 @@ public class ChatContext : DbContext, IUnitOfWork
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.ApplyConfiguration(new  EntityConfigurations.ReciprocalContactAggregate.ContactEntityTypeConfiguration());
-        modelBuilder.ApplyConfiguration(new EntityConfigurations.ArchiveContactAggregate.ContactEntityTypeConfiguration());
-        modelBuilder.ApplyConfiguration(new EntityConfigurations.ArchiveContactAggregate.ArchiveContactEntityTypeConfiguration());
+        modelBuilder.ApplyConfiguration(new ContactEntityTypeConfiguration());
+        modelBuilder.ApplyConfiguration(
+            new EntityConfigurations.ArchiveContactAggregate.ContactEntityTypeConfiguration());
+        modelBuilder.ApplyConfiguration(new ArchiveContactEntityTypeConfiguration());
     }
 
     public async Task<IDbContextTransaction> BeginTransactionAsync()

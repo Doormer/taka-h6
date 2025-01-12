@@ -1,7 +1,6 @@
-using System.Transactions;
 using Chat.Domain.SeedWork;
 
-namespace Chat.Domain.AggregateModels.ArchiveContactAggregate;
+namespace Chat.Domain.AggregateModels.ContactArchivalAggregate;
 
 public class Contact(Guid userId, Guid contactUserId, bool isArchived) : Entity
 {
