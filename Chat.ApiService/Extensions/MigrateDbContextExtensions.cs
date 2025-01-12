@@ -1,7 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System.Diagnostics;
 
-
 internal static class MigrateDbContextExtensions
 {
     private static readonly string ActivitySourceName = "DbMigrations";

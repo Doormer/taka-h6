@@ -11,13 +11,18 @@ public class AddContactCommandHandler(
     ILogger<AddContactCommandHandler> logger)
     : IRequestHandler<AddContactCommand, bool>
 {
-    private readonly IReciprocalContactRepo _reciprocalContactRepo = reciprocalContactRepo ?? throw new ArgumentNullException(nameof(reciprocalContactRepo));
+    private readonly ILogger<AddContactCommandHandler> _logger =
+        logger ?? throw new ArgumentNullException(nameof(logger));
+
     private readonly IMediator _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
-    private readonly ILogger<AddContactCommandHandler> _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+
+    private readonly IReciprocalContactRepo _reciprocalContactRepo =
+        reciprocalContactRepo ?? throw new ArgumentNullException(nameof(reciprocalContactRepo));
 
     public async Task<bool> Handle(AddContactCommand message, CancellationToken cancellationToken)
     {
         var reciprocalContact = new ReciprocalContact(message.UserId, message.UserContactId);
+
         //todo
         //check whether the contact is already added
         _logger.LogInformation("AddingContact - contact: {@contact}", reciprocalContact);

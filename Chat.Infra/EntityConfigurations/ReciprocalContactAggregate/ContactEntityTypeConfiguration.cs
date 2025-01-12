@@ -1,5 +1,4 @@
-﻿
-using Chat.Domain.AggregateModels.ReciprocalContactAggregate;
+﻿using Chat.Domain.AggregateModels.ReciprocalContactAggregate;
 
 namespace Chat.Infra.EntityConfigurations.ReciprocalContactAggregate;
 
@@ -10,11 +9,11 @@ internal class ContactEntityTypeConfiguration : IEntityTypeConfiguration<Contact
         contactConfiguration.ToTable("contacts");
 
         contactConfiguration.Ignore(c => c.DomainEvents);
-        
+
 
         contactConfiguration.Property(c => c.UserId).HasColumnName("UserId");
         contactConfiguration.Property(c => c.ContactUserId).HasColumnName("ContactUserId");
-        
+
         contactConfiguration.HasIndex(c => new { c.UserId, c.ContactUserId }).IsUnique();
     }
 }

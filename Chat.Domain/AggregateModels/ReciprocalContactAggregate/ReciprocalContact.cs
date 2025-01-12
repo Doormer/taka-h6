@@ -4,7 +4,7 @@ namespace Chat.Domain.AggregateModels.ReciprocalContactAggregate;
 
 public class ReciprocalContact(Guid userId, Guid contactUserId) : Entity, IAggregateRoot
 {
-    private Contact _contact  = new(userId, contactUserId);
+    private readonly Contact _contact = new(userId, contactUserId);
 
     public (Contact, Contact) GetReciprocalContact()
     {

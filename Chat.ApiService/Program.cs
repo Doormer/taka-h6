@@ -1,7 +1,5 @@
 using Chat.ApiService.Apis;
 using Chat.ApiService.Extensions;
-using Microsoft.Extensions.Configuration;
-
 using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -39,4 +37,3 @@ app.MapChatApiV1();
 app.MapDefaultEndpoints();
 
 app.Run();
-

@@ -1,5 +1,3 @@
-using Chat.Domain.AggregateModels.ReciprocalContactAggregate;
-
 namespace Chat.Domain.AggregateModels.ReciprocalContactAggregate;
 
 public interface IReciprocalContactRepo : IRepository<ReciprocalContact>
