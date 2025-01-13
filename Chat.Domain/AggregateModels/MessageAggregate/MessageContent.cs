@@ -1,9 +1,11 @@
+using Chat.Domain.SeedWork;
+
 namespace Chat.Domain.AggregateModels.MessageAggregate;
 
-public class MessageContent : ValueObject
+public sealed class MessageContent : ValueObject
 {
-    public string Value { get; private set; }
-    public MessageType Type { get; private set; }
+    public required string Value { get; init; }
+    public required MessageType Type { get; init; }
 
     private MessageContent() { }
 
@@ -11,8 +13,24 @@ public class MessageContent : ValueObject
     {
         if (string.IsNullOrEmpty(content))
             throw new ArgumentNullException(nameof(content));
+            
+        if (content.Length > 5000)
+            throw new ArgumentException("Message content too long", nameof(content));
+
+        ValidateContentByType(content, type);
 
         return new MessageContent { Value = content, Type = type };
+    }
+
+    private static void ValidateContentByType(string content, MessageType type)
+    {
+        switch (type)
+        {
+            case MessageType.Text:
+                break;
+            case MessageType.Image:
+                break;
+        }
     }
 
     protected override IEnumerable<object> GetEqualityComponents()
@@ -20,4 +38,12 @@ public class MessageContent : ValueObject
         yield return Value;
         yield return Type;
     }
+
+    public bool IsText() => Type == MessageType.Text;
+    public bool IsImage() => Type == MessageType.Image;
+    public bool IsVoice() => Type == MessageType.Voice;
+    public bool IsVideo() => Type == MessageType.Video;
+    public bool IsFile() => Type == MessageType.File;
+
+    public bool IsMediaType() => IsImage() || IsVoice() || IsVideo();
 } 
