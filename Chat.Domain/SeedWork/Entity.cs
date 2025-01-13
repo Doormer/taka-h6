@@ -5,22 +5,10 @@ namespace Chat.Domain.SeedWork;
 public abstract class Entity
 {
     int? _requestedHashCode;
-    int _Id;
+    public Guid Id { get; protected set; }
 
-    public virtual int Id
-    {
-        get
-        {
-            return _Id;
-        }
-        protected set
-        {
-            _Id = value;
-        }
-    }
-
-    private List<INotification> _domainEvents;
-    public IReadOnlyCollection<INotification> DomainEvents => _domainEvents?.AsReadOnly();
+    private List<INotification>? _domainEvents;
+    public IReadOnlyCollection<INotification>? DomainEvents => _domainEvents?.AsReadOnly();
     
     public void AddDomainEvent(INotification eventItem)
     {
