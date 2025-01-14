@@ -5,33 +5,53 @@ using Microsoft.Extensions.Logging;
 
 namespace Chat.Application.Commands;
 
-public class ArchiveContactCommandHandler(
-    IMediator mediator,
-    IArchiveContactRepo archiveContactRepo,
-    ILogger<ArchiveContactCommandHandler> logger)
-    : IRequestHandler<ArchiveContactCommand, bool>
+public class ArchiveContactCommandHandler : IRequestHandler<ArchiveContactCommand, bool>
 {
-    private readonly IArchiveContactRepo _archiveContactRepo =
-        archiveContactRepo ?? throw new ArgumentNullException(nameof(archiveContactRepo));
+    private readonly IArchiveContactRepo _archiveContactRepo;
+    private readonly ILogger<ArchiveContactCommandHandler> _logger;
 
-    private readonly ILogger<ArchiveContactCommandHandler> _logger =
-        logger ?? throw new ArgumentNullException(nameof(logger));
-
-    private readonly IMediator _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
-
-    public async Task<bool> Handle(ArchiveContactCommand message, CancellationToken cancellationToken)
+    public ArchiveContactCommandHandler(
+        IArchiveContactRepo archiveContactRepo,
+        ILogger<ArchiveContactCommandHandler> logger)
     {
-        var contact = await _archiveContactRepo.FindContactAsync(message.UserId, message.UserContactId);
-        if (contact is null)
+        _archiveContactRepo = archiveContactRepo;
+        _logger = logger;
+    }
+
+    public async Task<bool> Handle(ArchiveContactCommand request, CancellationToken cancellationToken)
+    {
+        try
         {
-            throw new Exception("Contact not found");
+            var contactArchival = await _archiveContactRepo.FindContactAsync(request.UserId, request.UserContactId);
+            
+            if (contactArchival == null)
+            {
+                contactArchival = new ContactArchival(request.UserId);
+                contactArchival.ArchiveContact(request.UserContactId);
+            }
+            else
+            {
+                // 切换归档状态
+                if (contactArchival.Contact?.IsArchived == true)
+                {
+                    contactArchival.UnarchiveContact(request.UserContactId);
+                }
+                else
+                {
+                    contactArchival.ArchiveContact(request.UserContactId);
+                }
+            }
+
+            _archiveContactRepo.UpdateArchiveStatus(contactArchival);
+            await _archiveContactRepo.UnitOfWork.SaveEntitiesAsync(cancellationToken);
+            
+            return true;
         }
-
-        contact.UpdateArchivedStatus(true);
-
-        _logger.LogInformation("ArchivingContact - contact: {@contact}", contact);
-        _archiveContactRepo.UpdateArchiveStatus(contact);
-
-        return await _archiveContactRepo.UnitOfWork.SaveEntitiesAsync(cancellationToken);
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error archiving contact {ContactId} for user {UserId}", 
+                request.UserContactId, request.UserId);
+            return false;
+        }
     }
 }

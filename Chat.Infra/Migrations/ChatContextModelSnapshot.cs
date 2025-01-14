@@ -22,24 +22,7 @@ namespace Chat.Infra.Migrations
 
             MySqlModelBuilderExtensions.AutoIncrementColumns(modelBuilder);
 
-            modelBuilder.Entity("Chat.Domain.AggregateModels.ArchiveContactAggregate.ArchiveContact", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("char(36)")
-                        .HasColumnName("UserId");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("users", (string)null);
-                });
-
-            modelBuilder.Entity("Chat.Domain.AggregateModels.ArchiveContactAggregate.Contact", b =>
+            modelBuilder.Entity("Chat.Domain.AggregateModels.ContactArchivalAggregate.Contact", b =>
                 {
                     b.Property<int>("Id")
                         .HasColumnType("int");
@@ -65,6 +48,23 @@ namespace Chat.Infra.Migrations
                         .IsUnique();
 
                     b.ToTable("contacts", (string)null);
+                });
+
+            modelBuilder.Entity("Chat.Domain.AggregateModels.ContactArchivalAggregate.ContactArchival", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("char(36)")
+                        .HasColumnName("UserId");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("users", (string)null);
                 });
 
             modelBuilder.Entity("Chat.Domain.AggregateModels.ReciprocalContactAggregate.Contact", b =>
@@ -93,23 +93,23 @@ namespace Chat.Infra.Migrations
                     b.ToTable("contacts", (string)null);
                 });
 
-            modelBuilder.Entity("Chat.Domain.AggregateModels.ArchiveContactAggregate.Contact", b =>
+            modelBuilder.Entity("Chat.Domain.AggregateModels.ContactArchivalAggregate.Contact", b =>
                 {
                     b.HasOne("Chat.Domain.AggregateModels.ReciprocalContactAggregate.Contact", null)
                         .WithOne()
-                        .HasForeignKey("Chat.Domain.AggregateModels.ArchiveContactAggregate.Contact", "Id")
+                        .HasForeignKey("Chat.Domain.AggregateModels.ContactArchivalAggregate.Contact", "Id")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Chat.Domain.AggregateModels.ArchiveContactAggregate.ArchiveContact", null)
+                    b.HasOne("Chat.Domain.AggregateModels.ContactArchivalAggregate.ContactArchival", null)
                         .WithOne("Contact")
-                        .HasForeignKey("Chat.Domain.AggregateModels.ArchiveContactAggregate.Contact", "UserId")
-                        .HasPrincipalKey("Chat.Domain.AggregateModels.ArchiveContactAggregate.ArchiveContact", "UserId")
+                        .HasForeignKey("Chat.Domain.AggregateModels.ContactArchivalAggregate.Contact", "UserId")
+                        .HasPrincipalKey("Chat.Domain.AggregateModels.ContactArchivalAggregate.ContactArchival", "UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Chat.Domain.AggregateModels.ArchiveContactAggregate.ArchiveContact", b =>
+            modelBuilder.Entity("Chat.Domain.AggregateModels.ContactArchivalAggregate.ContactArchival", b =>
                 {
                     b.Navigation("Contact");
                 });

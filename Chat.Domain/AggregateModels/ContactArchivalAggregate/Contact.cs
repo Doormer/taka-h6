@@ -2,14 +2,28 @@ using Chat.Domain.SeedWork;
 
 namespace Chat.Domain.AggregateModels.ContactArchivalAggregate;
 
-public class Contact(Guid userId, Guid contactUserId, bool isArchived) : Entity
+public class Contact : ValueObject
 {
-    public Guid UserId { get; private set; } = userId;
-    public Guid ContactUserId { get; } = contactUserId;
-    public bool IsArchived { get; private set; } = isArchived;
+    public Guid UserId { get; private set; }
+    public Guid ContactUserId { get; private set; }
+    public bool IsArchived { get; private set; }
 
-    public void UpdateArchivedStatus(bool isArchived)
+    public Contact(Guid userId, Guid contactUserId, bool isArchived)
+    {
+        UserId = userId;
+        ContactUserId = contactUserId;
+        IsArchived = isArchived;
+    }
+
+    internal void UpdateArchivedStatus(bool isArchived)
     {
         IsArchived = isArchived;
+    }
+
+    protected override IEnumerable<object> GetEqualityComponents()
+    {
+        yield return UserId;
+        yield return ContactUserId;
+        yield return IsArchived;
     }
 }
