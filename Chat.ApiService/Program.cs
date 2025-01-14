@@ -19,6 +19,9 @@ builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(Progr
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+// Add DbSeeder registration
+builder.Services.AddScoped<Chat.Infra.Seeding.DbSeeder>();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -34,5 +37,13 @@ var log = new LoggerConfiguration()
     .CreateLogger();
 
 app.MapChatApiV1();
+
+// Seed the database
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    var seeder = services.GetRequiredService<Chat.Infra.Seeding.DbSeeder>();
+    await seeder.SeedAsync();
+}
 
 app.Run();
