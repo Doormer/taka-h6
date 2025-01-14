@@ -7,7 +7,7 @@ public class Message : Entity
     public int Id { get; private set; }
     public int ChatId { get; private set; }
     public Guid SenderId { get; private set; }
-    public string Content { get; private set; }
+    public required string Content { get; init; }
     public DateTime SentAt { get; private set; }
     public bool IsRead { get; private set; }
 
@@ -22,6 +22,12 @@ public class Message : Entity
         Content = content;
         SentAt = DateTime.UtcNow;
         IsRead = false;
+    }
+
+    public Message(int id, Guid senderId)
+    {
+        Id = id;
+        SenderId = senderId;
     }
 
     public void MarkAsRead()

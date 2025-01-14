@@ -20,7 +20,10 @@ public class Chat : Entity, IAggregateRoot
 
     public void AddMessage(string content, Guid senderId)
     {
-        var message = new Message(this.Id, senderId, content);
+        var message = new Message(this.Id, senderId)
+        {
+            Content = content
+        };
         Messages.Add(message);
     }
 }
