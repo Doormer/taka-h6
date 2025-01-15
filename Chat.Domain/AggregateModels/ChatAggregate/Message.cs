@@ -11,27 +11,18 @@ public class Message : Entity
     public DateTime SentAt { get; private set; }
     public bool IsRead { get; private set; }
 
-    public Chat Chat { get; private set; }
-
     protected Message() { }
 
-    public Message(int chatId, Guid senderId, string content)
+    public Message(int chatId, Guid senderId)
     {
         ChatId = chatId;
         SenderId = senderId;
-        Content = content;
         SentAt = DateTime.UtcNow;
         IsRead = false;
     }
 
-    public Message(int id, Guid senderId)
+    public void UpdateReadStatus(bool isRead)
     {
-        Id = id;
-        SenderId = senderId;
-    }
-
-    public void MarkAsRead()
-    {
-        IsRead = true;
+        IsRead = isRead;
     }
 }

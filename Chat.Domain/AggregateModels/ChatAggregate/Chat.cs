@@ -5,7 +5,7 @@ namespace Chat.Domain.AggregateModels.ChatAggregate;
 public class Chat : Entity, IAggregateRoot
 {
     public int Id { get; private set; }
-    public string Name { get; private set; }
+    public required string Name { get; init; }
     public DateTime CreatedAt { get; private set; }
     public ICollection<Message> Messages { get; private set; }
 
@@ -18,12 +18,17 @@ public class Chat : Entity, IAggregateRoot
         Messages = new List<Message>();
     }
 
-    public void AddMessage(string content, Guid senderId)
+    public void UpdateMessageReadStatus(Guid userId, bool isRead)
     {
-        var message = new Message(this.Id, senderId)
+        var messages = Messages.Where(m => m.SenderId != userId);
+        foreach (var message in messages)
         {
-            Content = content
-        };
-        Messages.Add(message);
+            message.UpdateReadStatus(isRead);
+        }
+    }
+
+    public IEnumerable<Message> GetUnreadMessages(Guid userId)
+    {
+        return Messages.Where(m => m.SenderId != userId && !m.IsRead);
     }
 }
