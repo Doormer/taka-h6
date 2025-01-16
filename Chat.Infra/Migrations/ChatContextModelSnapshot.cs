@@ -22,13 +22,37 @@ namespace Chat.Infra.Migrations
 
             MySqlModelBuilderExtensions.AutoIncrementColumns(modelBuilder);
 
-            modelBuilder.Entity("Chat.Domain.AggregateModels.ReciprocalContactAggregate.Contact", b =>
+            modelBuilder.Entity("Chat.Domain.AggregateModels.MessageAggregate.Message", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)");
+
+                    b.Property<DateTime>("CreatedTime")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<DateTime?>("ReadTime")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<Guid>("ReceiverId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<Guid>("SenderId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<int>("Status")
                         .HasColumnType("int");
 
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+                    b.HasKey("Id");
+
+                    b.ToTable("Messages", (string)null);
+                });
+
+            modelBuilder.Entity("Chat.Domain.AggregateModels.ReciprocalContactAggregate.Contact", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)");
 
                     b.Property<Guid>("ContactUserId")
                         .HasColumnType("char(36)");
@@ -39,6 +63,53 @@ namespace Chat.Infra.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("contacts", (string)null);
+                });
+
+            modelBuilder.Entity("Chat.Infra.Idempotency.ClientRequest", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<DateTime>("Time")
+                        .HasColumnType("datetime(6)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ClientRequests", (string)null);
+                });
+
+            modelBuilder.Entity("Chat.Domain.AggregateModels.MessageAggregate.Message", b =>
+                {
+                    b.OwnsOne("Chat.Domain.AggregateModels.MessageAggregate.MessageContent", "Content", b1 =>
+                        {
+                            b1.Property<Guid>("MessageId")
+                                .HasColumnType("char(36)");
+
+                            b1.Property<int>("Type")
+                                .HasColumnType("int")
+                                .HasColumnName("MessageType");
+
+                            b1.Property<string>("Value")
+                                .IsRequired()
+                                .HasMaxLength(5000)
+                                .HasColumnType("varchar(5000)")
+                                .HasColumnName("Content");
+
+                            b1.HasKey("MessageId");
+
+                            b1.ToTable("Messages");
+
+                            b1.WithOwner()
+                                .HasForeignKey("MessageId");
+                        });
+
+                    b.Navigation("Content")
+                        .IsRequired();
                 });
 #pragma warning restore 612, 618
         }

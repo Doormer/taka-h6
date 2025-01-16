@@ -1,5 +1,7 @@
 using Chat.ApiService.Apis;
 using Chat.ApiService.Extensions;
+using Chat.Application.Extensions;
+using Chat.Infra.Extensions;
 using Microsoft.Extensions.Configuration;
 
 using Serilog;
@@ -12,10 +14,15 @@ builder.AddServiceDefaults();
 // Add services to the container.
 builder.Services.AddProblemDetails();
 
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-builder.Services.AddOpenApi();
+// Add application layer (包含 MediatR, Validators, 等)
+builder.Services.AddApplication(builder.Configuration);
 
-builder.AddApplicationServices();
+// Add infrastructure layer (包含 DbContext, Repositories, 等)
+builder.Services.AddInfrastructure(builder.Configuration);
+
+// Add API layer services
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
@@ -35,6 +42,8 @@ var log = new LoggerConfiguration()
           .CreateLogger();
 
 app.MapChatApiV1();
+
+app.MapMessageApiV1();
 
 app.MapDefaultEndpoints();
 

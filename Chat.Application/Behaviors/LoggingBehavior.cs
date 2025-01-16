@@ -1,6 +1,7 @@
 ﻿using Chat.ApiService.Application.Behaviors;
 using MediatR;
 using Microsoft.Extensions.Logging;
+using System.Diagnostics;
 
 namespace Chat.Application.Behaviors;
 
@@ -19,11 +20,24 @@ public class LoggingBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, 
         RequestHandlerDelegate<TResponse> next,
         CancellationToken cancellationToken)
     {
-        _logger.LogInformation("Handling command {CommandName} ({@Command})", request.GetGenericTypeName(), request);
-        var response = await next();
-        _logger.LogInformation("Command {CommandName} handled - response: {@Response}", request.GetGenericTypeName(),
-            response);
+        var requestName = typeof(TRequest).Name;
+        var stopwatch = Stopwatch.StartNew();
 
-        return response;
+        try
+        {
+            _logger.LogInformation("Handling {RequestName}", requestName);
+            var response = await next();
+            stopwatch.Stop();
+            
+            _logger.LogInformation("Handled {RequestName} in {ElapsedMilliseconds}ms", 
+                requestName, stopwatch.ElapsedMilliseconds);
+                
+            return response;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error handling {RequestName}", requestName);
+            throw;
+        }
     }
 }
