@@ -2,48 +2,26 @@ using Chat.Domain.SeedWork;
 
 namespace Chat.Domain.AggregateModels.MessageAggregate;
 
-public sealed class MessageContent : ValueObject
+/// <summary>
+/// Represents the content of a message, including its value and type.
+/// Ensures content validation and type safety for different kinds of messages.
+/// </summary>
+public class MessageContent
 {
-    public required string Value { get; init; }
-    public required MessageType Type { get; init; }
+    public Guid Id { get; private set; }
+    public string Value { get; private set; }
+    public MessageType Type { get; private set; }
 
-    private MessageContent() { }
-
-    public static MessageContent Create(string content, MessageType type)
+    public MessageContent(string value, MessageType type)
     {
-        if (string.IsNullOrEmpty(content))
-            throw new ArgumentNullException(nameof(content));
+        if (string.IsNullOrEmpty(value))
+            throw new ArgumentNullException(nameof(value));
             
-        if (content.Length > 5000)
-            throw new ArgumentException("Message content too long", nameof(content));
+        if (value.Length > 5000)
+            throw new ArgumentException("Message content too long", nameof(value));
 
-        ValidateContentByType(content, type);
-
-        return new MessageContent { Value = content, Type = type };
+        Id = Guid.NewGuid();
+        Value = value;
+        Type = type;
     }
-
-    private static void ValidateContentByType(string content, MessageType type)
-    {
-        switch (type)
-        {
-            case MessageType.Text:
-                break;
-            case MessageType.Image:
-                break;
-        }
-    }
-
-    protected override IEnumerable<object> GetEqualityComponents()
-    {
-        yield return Value;
-        yield return Type;
-    }
-
-    public bool IsText() => Type == MessageType.Text;
-    public bool IsImage() => Type == MessageType.Image;
-    public bool IsVoice() => Type == MessageType.Voice;
-    public bool IsVideo() => Type == MessageType.Video;
-    public bool IsFile() => Type == MessageType.File;
-
-    public bool IsMediaType() => IsImage() || IsVoice() || IsVideo();
 } 
