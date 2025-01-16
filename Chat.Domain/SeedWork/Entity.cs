@@ -5,7 +5,7 @@ namespace Chat.Domain.SeedWork;
 public abstract class Entity
 {
     int? _requestedHashCode;
-    public Guid Id { get; protected set; }
+    int _Id;
 
     private List<INotification>? _domainEvents;
     public IReadOnlyCollection<INotification>? DomainEvents => _domainEvents?.AsReadOnly();

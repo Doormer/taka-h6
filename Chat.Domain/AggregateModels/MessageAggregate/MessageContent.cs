@@ -2,21 +2,26 @@ using Chat.Domain.SeedWork;
 
 namespace Chat.Domain.AggregateModels.MessageAggregate;
 
+/// <summary>
+/// Represents the content of a message, including its value and type.
+/// Ensures content validation and type safety for different kinds of messages.
+/// </summary>
 public class MessageContent
 {
-    public required string Value { get; init; }
-    public required MessageType Type { get; init; }
+    public Guid Id { get; private set; }
+    public string Value { get; private set; }
+    public MessageType Type { get; private set; }
 
-    private MessageContent() { } // For EF Core
-
-    public static MessageContent Create(string content, MessageType type)
+    public MessageContent(string value, MessageType type)
     {
-        if (string.IsNullOrEmpty(content))
-            throw new ArgumentNullException(nameof(content));
+        if (string.IsNullOrEmpty(value))
+            throw new ArgumentNullException(nameof(value));
             
-        if (content.Length > 5000)
-            throw new ArgumentException("Message content too long", nameof(content));
+        if (value.Length > 5000)
+            throw new ArgumentException("Message content too long", nameof(value));
 
-        return new MessageContent { Value = content, Type = type };
+        Id = Guid.NewGuid();
+        Value = value;
+        Type = type;
     }
 } 
