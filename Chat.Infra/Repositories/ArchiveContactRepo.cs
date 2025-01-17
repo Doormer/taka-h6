@@ -3,6 +3,10 @@ using Chat.Domain.SeedWork;
 
 namespace Chat.Infra.Repositories;
 
+/// <summary>
+/// Repository implementation for managing contact archival operations.
+/// Handles database operations for archiving and retrieving contact information.
+/// </summary>
 public class ContactArchivalRepo(ChatContext context) : IArchiveContactRepo
 {
     private readonly ChatContext _context = context ?? throw new ArgumentNullException(nameof(context));

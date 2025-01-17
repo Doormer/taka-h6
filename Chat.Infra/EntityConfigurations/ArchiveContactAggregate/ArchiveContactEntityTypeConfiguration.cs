@@ -2,6 +2,10 @@ using Chat.Domain.AggregateModels.ContactArchivalAggregate;
 
 namespace Chat.Infra.EntityConfigurations.ArchiveContactAggregate;
 
+/// <summary>
+/// Entity Framework Core configuration for the ContactArchival aggregate.
+/// Defines the database schema and relationships for archive contacts.
+/// </summary>
 internal class ArchiveContactEntityTypeConfiguration : IEntityTypeConfiguration<ContactArchival>
 {
     public void Configure(EntityTypeBuilder<ContactArchival> contactConfiguration)

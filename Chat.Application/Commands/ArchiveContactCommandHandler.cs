@@ -5,6 +5,10 @@ using Microsoft.Extensions.Logging;
 
 namespace Chat.Application.Commands;
 
+/// <summary>
+/// Handles the archival operation for contacts.
+/// Processes requests to archive or unarchive contacts and manages the persistence of these changes.
+/// </summary>
 public class ArchiveContactCommandHandler : IRequestHandler<ArchiveContactCommand, bool>
 {
     private readonly IArchiveContactRepo _archiveContactRepo;

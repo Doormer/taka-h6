@@ -8,6 +8,7 @@ namespace Chat.Domain.AggregateModels.ContactArchivalAggregate;
 /// </summary>
 public class Contact : ValueObject
 {
+    public int Id { get; private set; }
     public Guid UserId { get; private set; }
     public Guid ContactUserId { get; private set; }
     public bool IsArchived { get; private set; }

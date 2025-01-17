@@ -8,6 +8,10 @@ using ContactEntityTypeConfiguration =
 
 namespace Chat.Infra;
 
+/// <summary>
+/// Entity Framework Core database context for the Chat application.
+/// Implements Unit of Work pattern and manages database transactions.
+/// </summary>
 public class ChatContext : DbContext, IUnitOfWork
 {
     private readonly IMediator _mediator;
