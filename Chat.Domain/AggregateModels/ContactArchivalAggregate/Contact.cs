@@ -2,6 +2,10 @@ using Chat.Domain.SeedWork;
 
 namespace Chat.Domain.AggregateModels.ContactArchivalAggregate;
 
+/// <summary>
+/// Represents a contact value object that contains archival status information.
+/// Immutable by design as part of the Contact Archival aggregate.
+/// </summary>
 public class Contact : ValueObject
 {
     public Guid UserId { get; private set; }

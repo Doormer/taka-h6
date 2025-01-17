@@ -3,6 +3,10 @@ using MediatR;
 
 namespace Chat.Domain.AggregateModels.ContactArchivalAggregate;
 
+/// <summary>
+/// Represents the aggregate root for contact archival management.
+/// Handles the archival status of contacts for a specific user.
+/// </summary>
 public class ContactArchival : Entity, IAggregateRoot
 {
     public Guid UserId { get; private set; }
