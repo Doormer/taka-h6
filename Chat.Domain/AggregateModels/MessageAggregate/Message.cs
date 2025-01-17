@@ -2,6 +2,7 @@ using Chat.Domain.SeedWork;
 using Chat.Domain.AggregateModels.MessageAggregate.Events;
 
 namespace Chat.Domain.AggregateModels.MessageAggregate;
+
 public enum MessageFailureReason
 {
     ReceiverNotFound = 1,
@@ -19,69 +20,58 @@ public sealed class Message : Entity, IAggregateRoot
 {
     public Guid SenderId { get; private set; }
     public Guid ReceiverId { get; private set; }
-    public MessageContent Content { get; private set; }
+    public MessageContent Content { get; private set; } = null!;
     public MessageStatus Status { get; private set; }
     public DateTime CreatedTime { get; private set; }
     public DateTime? ReadTime { get; private set; }
     public MessageFailureReason? FailureReason { get; private set; }
 
-    // For EF Core
-    protected Message() { }
+    private Message() { }
 
-    public Message(
-        Guid senderId,
-        Guid receiverId,
-        string content,
-        MessageType type)
+    private Message(Guid senderId, Guid receiverId, MessageContent content)
     {
         Id = Guid.NewGuid();
         SenderId = senderId;
         ReceiverId = receiverId;
-        Content = new MessageContent(content, type);
+        Content = content;
         Status = MessageStatus.Sent;
         CreatedTime = DateTime.UtcNow;
 
-        AddDomainEvent(new MessageSentDomainEvent(this));
+        AddDomainEvent(new MessageSentDomainEvent(Id, senderId, receiverId));
     }
 
-    public void MarkAsRead()
+    public static Message Create(Guid senderId, Guid receiverId, string content, MessageType type)
     {
-        if (Status == MessageStatus.Failed)
-            throw new InvalidOperationException("Cannot mark failed message as read");
-            
-        if (Status != MessageStatus.Read)
-        {
-            Status = MessageStatus.Read;
-            ReadTime = DateTime.UtcNow;
-            AddDomainEvent(new MessageReadDomainEvent(this));
-        }
+        var messageContent = new MessageContent(content, type);
+        return new Message(senderId, receiverId, messageContent);
     }
 
     public void MarkAsDelivered()
     {
-        if (Status == MessageStatus.Failed)
-            throw new InvalidOperationException("Cannot mark failed message as delivered");
-            
-        if (Status == MessageStatus.Read)
-            throw new InvalidOperationException("Cannot mark read message as delivered");
-            
-        if (Status == MessageStatus.Sent)
-        {
-            Status = MessageStatus.Delivered;
-            AddDomainEvent(new MessageDeliveredDomainEvent(this));
-        }
+        if (Status != MessageStatus.Sent)
+            throw new InvalidOperationException($"Cannot mark message as delivered. Current status: {Status}");
+
+        Status = MessageStatus.Delivered;
+        AddDomainEvent(new MessageDeliveredDomainEvent(Id, ReceiverId));
+    }
+
+    public void MarkAsRead()
+    {
+        if (Status != MessageStatus.Delivered)
+            throw new InvalidOperationException($"Cannot mark message as read. Current status: {Status}");
+
+        Status = MessageStatus.Read;
+        ReadTime = DateTime.UtcNow;
+        AddDomainEvent(new MessageReadDomainEvent(Id, ReceiverId));
     }
 
     public void MarkAsFailed(MessageFailureReason reason)
     {
-        if (Status == MessageStatus.Read)
-            throw new InvalidOperationException("Cannot mark read message as failed");
-            
-        if (Status != MessageStatus.Failed)
-        {
-            Status = MessageStatus.Failed;
-            FailureReason = reason;
-            AddDomainEvent(new MessageFailedDomainEvent(this, reason));
-        }
+        if (Status != MessageStatus.Sent)
+            throw new InvalidOperationException($"Cannot mark message as failed. Current status: {Status}");
+
+        Status = MessageStatus.Failed;
+        FailureReason = reason;
+        AddDomainEvent(new MessageFailedDomainEvent(Id, reason.ToString()));
     }
-} 
+}

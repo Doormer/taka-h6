@@ -8,6 +8,7 @@ using Microsoft.Extensions.Configuration;
 using FluentValidation;
 using Microsoft.Extensions.Options;
 using Chat.Application.Commands.SendMessage;
+using Chat.Application.Queries;
 
 namespace Chat.Application.Extensions;
 
@@ -15,7 +16,7 @@ public static class ServiceCollectionExtensions
 {
     public static IServiceCollection AddApplication(this IServiceCollection services, IConfiguration configuration)
     {
-        services.AddMediatR(cfg => 
+        services.AddMediatR(cfg =>
         {
             cfg.RegisterServicesFromAssembly(typeof(ServiceCollectionExtensions).Assembly);
             cfg.AddBehavior(typeof(IPipelineBehavior<,>), typeof(LoggingBehavior<,>));
@@ -37,6 +38,9 @@ public static class ServiceCollectionExtensions
 
         services.AddValidatorsFromAssembly(typeof(SendMessageCommand).Assembly);
 
+        // Register queries
+        services.AddScoped<IChatQueries, ChatQueries>();
+
         return services;
     }
-} 
+}

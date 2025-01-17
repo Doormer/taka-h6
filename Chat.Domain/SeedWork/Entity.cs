@@ -5,22 +5,28 @@ namespace Chat.Domain.SeedWork;
 public abstract class Entity
 {
     int? _requestedHashCode;
-    int _Id;
+    Guid _Id;
+
+    public virtual Guid Id
+    {
+        get => _Id;
+        protected set => _Id = value;
+    }
 
     private List<INotification>? _domainEvents;
     public IReadOnlyCollection<INotification>? DomainEvents => _domainEvents?.AsReadOnly();
-    
+
     public void AddDomainEvent(INotification eventItem)
     {
         _domainEvents = _domainEvents ?? new List<INotification>();
         _domainEvents.Add(eventItem);
     }
-    
+
     public void RemoveDomainEvent(INotification eventItem)
     {
         _domainEvents?.Remove(eventItem);
     }
-    
+
     public void ClearDomainEvents()
     {
         _domainEvents?.Clear();
@@ -28,7 +34,7 @@ public abstract class Entity
 
     public bool IsTransient()
     {
-        return this.Id == default;
+        return Id == default;
     }
 
     public override bool Equals(object? obj)
@@ -55,9 +61,7 @@ public abstract class Entity
         if (!IsTransient())
         {
             if (!_requestedHashCode.HasValue)
-                _requestedHashCode =
-                    this.Id.GetHashCode() ^
-                    31; // XOR for random distribution (http://blogs.msdn.com/b/ericlippert/archive/2011/02/28/guidelines-and-rules-for-gethashcode.aspx)
+                _requestedHashCode = Id.GetHashCode() ^ 31;
 
             return _requestedHashCode.Value;
         }
@@ -65,15 +69,15 @@ public abstract class Entity
             return base.GetHashCode();
     }
 
-    public static bool operator ==(Entity left, Entity right)
+    public static bool operator ==(Entity? left, Entity? right)
     {
         if (Object.Equals(left, null))
-            return (Object.Equals(right, null)) ? true : false;
+            return (Object.Equals(right, null));
         else
             return left.Equals(right);
     }
 
-    public static bool operator !=(Entity left, Entity right)
+    public static bool operator !=(Entity? left, Entity? right)
     {
         return !(left == right);
     }

@@ -17,7 +17,7 @@ public class GetMessagesQueryHandler : IRequestHandler<GetMessagesQuery, List<Me
         var messages = await _messageRepository.GetMessagesBetweenUsersAsync(
             request.User1Id,
             request.User2Id,
-            request.Skip,
+            null,
             request.Take);
 
         return messages.Select(m => new MessageDto
@@ -32,4 +32,4 @@ public class GetMessagesQueryHandler : IRequestHandler<GetMessagesQuery, List<Me
             ReadTime = m.ReadTime
         }).ToList();
     }
-} 
+}

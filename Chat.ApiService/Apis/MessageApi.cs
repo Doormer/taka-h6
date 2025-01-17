@@ -4,8 +4,14 @@ using Chat.Application.Commands.SendMessage;
 using Chat.Application.Commands.MarkMessageAsRead;
 using Chat.Application.Commands.MarkMessageAsDelivered;
 using Chat.Application.Queries.GetMessages;
+using Chat.Application.Common.Exceptions;
 
 namespace Chat.ApiService.Apis;
+
+public class ChatNotFoundException : Exception
+{
+    public ChatNotFoundException(string message) : base(message) { }
+}
 
 public static class MessageApi
 {
@@ -15,41 +21,47 @@ public static class MessageApi
             .WithTags("Messages")
             .WithOpenApi();
 
-        // 发送消息
+        // send messages
         group.MapPost("/", async Task<Results<Ok<Guid>, BadRequest>> (
             SendMessageCommand command,
             ISender sender,
             CancellationToken ct) =>
         {
-            try 
+            try
             {
                 var messageId = await sender.Send(command, ct);
                 return TypedResults.Ok(messageId);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return TypedResults.BadRequest();
             }
         })
         .WithName("SendMessage")
-        .WithDescription("发送消息");
+        .WithDescription("send message");
 
         // 获取用户间的消息历史
         group.MapGet("/{user1Id}/{user2Id}", async Task<Results<Ok<List<MessageDto>>, BadRequest>> (
             Guid user1Id,
             Guid user2Id,
-            [AsParameters] GetMessagesQuery query,
+            int? skip,
+            int? take,
             ISender sender,
             CancellationToken ct) =>
         {
             try
             {
-                query.User1Id = user1Id;
-                query.User2Id = user2Id;
+                var query = new GetMessagesQuery
+                {
+                    User1Id = user1Id,
+                    User2Id = user2Id,
+                    Skip = skip ?? 0,
+                    Take = take ?? 20
+                };
                 var messages = await sender.Send(query, ct);
                 return TypedResults.Ok(messages);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return TypedResults.BadRequest();
             }
@@ -66,7 +78,7 @@ public static class MessageApi
         {
             try
             {
-                var command = new MarkMessageAsReadCommand(messageId, readerId);
+                var command = new MarkMessageAsReadCommand { MessageId = messageId, ReaderId = readerId };
                 var result = await sender.Send(command, ct);
                 return TypedResults.Ok(result);
             }
@@ -91,7 +103,7 @@ public static class MessageApi
         {
             try
             {
-                var command = new MarkMessageAsDeliveredCommand(messageId, receiverId);
+                var command = new MarkMessageAsDeliveredCommand { MessageId = messageId, ReceiverId = receiverId };
                 var result = await sender.Send(command, ct);
                 return TypedResults.Ok(result);
             }
@@ -109,4 +121,4 @@ public static class MessageApi
 
         return app;
     }
-} 
+}
