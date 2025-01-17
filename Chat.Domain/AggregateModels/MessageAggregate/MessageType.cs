@@ -8,5 +8,6 @@ public enum MessageType
 {
     Text = 1,
     Image = 2,
-    File = 3
+    File = 3,
+    Emoji = 4
 } 

@@ -24,6 +24,26 @@ builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+// Add OpenTelemetry
+builder.Services.AddOpenTelemetry()
+    .WithTracing(builder => builder
+        .AddAspNetCoreInstrumentation()
+        .AddEntityFrameworkCoreInstrumentation()
+        .AddSource("ChatService")
+        .AddJaegerExporter())
+    .WithMetrics(builder => builder
+        .AddAspNetCoreInstrumentation()
+        .AddRuntimeInstrumentation()
+        .AddPrometheusExporter());
+
+// Add Health Checks
+builder.Services.AddHealthChecks()
+    .AddDbContextCheck<ChatContext>()
+    .AddAzureBlobStorage()
+    .AddSignalR();
+
+builder.Services.AddSignalR();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -46,6 +66,8 @@ app.MapChatApiV1();
 app.MapMessageApiV1();
 
 app.MapDefaultEndpoints();
+
+app.MapHub<ChatHub>("/chatHub");
 
 app.Run();
 

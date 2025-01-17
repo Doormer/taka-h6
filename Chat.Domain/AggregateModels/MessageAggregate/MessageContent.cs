@@ -11,17 +11,48 @@ public class MessageContent
     public Guid Id { get; private set; }
     public string Value { get; private set; }
     public MessageType Type { get; private set; }
+    public string? FileUrl { get; private set; }
+    public string? FileName { get; private set; }
+    public string? FileContentType { get; private set; }
 
-    public MessageContent(string value, MessageType type)
+    private MessageContent() { }
+
+    public static MessageContent CreateTextContent(string text)
     {
-        if (string.IsNullOrEmpty(value))
-            throw new ArgumentNullException(nameof(value));
+        if (string.IsNullOrEmpty(text))
+            throw new ArgumentNullException(nameof(text));
             
-        if (value.Length > 5000)
-            throw new ArgumentException("Message content too long", nameof(value));
+        if (text.Length > 5000)
+            throw new ArgumentException("Message content too long", nameof(text));
 
-        Id = Guid.NewGuid();
-        Value = value;
-        Type = type;
+        return new MessageContent
+        {
+            Id = Guid.NewGuid(),
+            Value = text,
+            Type = MessageType.Text
+        };
+    }
+
+    public static MessageContent CreateFileContent(string fileUrl, string fileName, string contentType)
+    {
+        return new MessageContent
+        {
+            Id = Guid.NewGuid(),
+            Value = fileUrl,
+            Type = MessageType.File,
+            FileUrl = fileUrl,
+            FileName = fileName,
+            FileContentType = contentType
+        };
+    }
+
+    public static MessageContent CreateEmojiContent(string emojiCode)
+    {
+        return new MessageContent
+        {
+            Id = Guid.NewGuid(),
+            Value = emojiCode,
+            Type = MessageType.Emoji
+        };
     }
 } 
