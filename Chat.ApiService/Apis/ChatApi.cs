@@ -1,5 +1,6 @@
 using Chat.ApiService.Application.Behaviors;
 using Chat.ApiService.Application.Commands;
+using Chat.Application.Commands;
 using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace Chat.ApiService.Apis;
@@ -12,9 +13,12 @@ public static class ChatApi
 
         //todo
         //setup API versioning
+        
+        api.MapPost("/all-contact", AddContactAsync); ;
 
         api.MapPost("/create-contact", AddContactAsync);
         api.MapPost("/archive-contact", ArchiveContactAsync);
+        api.MapPost("/unarchive-contact", UnarchiveContactAsync);
 
         return api;
     }
@@ -50,9 +54,27 @@ public static class ChatApi
     }
 
     public static async Task<Results<Ok, BadRequest<string>, ProblemHttpResult>> ArchiveContactAsync(
-
         //TODO handle idempotency [FromHeader(Name = "x-requestid")] Guid requestId,
         ArchiveContactCommand command,
+        [AsParameters] ChatServices services)
+    {
+        services.Logger.LogInformation(
+            "Sending command: {CommandName} ({@Command})",
+            command.GetGenericTypeName(),
+            command);
+
+        var commandResult = await services.Mediator.Send(command);
+
+        if (!commandResult)
+        {
+            return TypedResults.Problem("Add contact failed to process.", statusCode: 500);
+        }
+
+        return TypedResults.Ok();
+    }
+    
+    public static async Task<Results<Ok, BadRequest<string>, ProblemHttpResult>> UnarchiveContactAsync(
+        UnarchiveContactCommand command,
         [AsParameters] ChatServices services)
     {
         services.Logger.LogInformation(

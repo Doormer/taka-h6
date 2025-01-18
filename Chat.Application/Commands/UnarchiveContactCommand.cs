@@ -1,10 +1,10 @@
 using MediatR;
 using System.Runtime.Serialization;
-
 namespace Chat.Application.Commands;
 
 [DataContract]
-public class ArchiveContactCommand(Guid userId, Guid userContactId) : IRequest<bool>
+
+public class UnarchiveContactCommand(Guid userId, Guid userContactId): IRequest<bool>
 {
     [DataMember] public Guid UserId { get; private set; } = userId;
 

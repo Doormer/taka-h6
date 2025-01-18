@@ -4,6 +4,7 @@ using Chat.Infra;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Chat.Infra.Migrations
 {
     [DbContext(typeof(ChatContext))]
-    partial class ChatContextModelSnapshot : ModelSnapshot
+    [Migration("20250118010452_archiveFeature")]
+    partial class archiveFeature
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -35,8 +38,7 @@ namespace Chat.Infra.Migrations
                     b.Property<bool>("IsArchived")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("tinyint(1)")
-                        .HasDefaultValue(false)
-                        .HasColumnName("IsArchived");
+                        .HasDefaultValue(false);
 
                     b.Property<Guid>("UserId")
                         .ValueGeneratedOnUpdateSometimes()
@@ -94,36 +96,6 @@ namespace Chat.Infra.Migrations
                     b.ToTable("contacts", (string)null);
                 });
 
-            modelBuilder.Entity("Chat.Domain.QueryEntities.Contact", b =>
-                {
-                    b.Property<int>("Id")
-                        .HasColumnType("int");
-
-                    b.Property<string>("AvatarUrl")
-                        .IsRequired()
-                        .HasColumnType("longtext")
-                        .HasColumnName("AvatarUrl");
-
-                    b.Property<Guid>("ContactUserId")
-                        .ValueGeneratedOnUpdateSometimes()
-                        .HasColumnType("char(36)")
-                        .HasColumnName("ContactUserId");
-
-                    b.Property<bool>("IsArchived")
-                        .ValueGeneratedOnUpdateSometimes()
-                        .HasColumnType("tinyint(1)")
-                        .HasColumnName("IsArchived");
-
-                    b.Property<Guid>("UserId")
-                        .ValueGeneratedOnUpdateSometimes()
-                        .HasColumnType("char(36)")
-                        .HasColumnName("UserId");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("contacts", (string)null);
-                });
-
             modelBuilder.Entity("Chat.Domain.AggregateModels.ContactArchivalAggregate.Contact", b =>
                 {
                     b.HasOne("Chat.Domain.AggregateModels.ReciprocalContactAggregate.Contact", null)
@@ -136,15 +108,6 @@ namespace Chat.Infra.Migrations
                         .WithOne("Contact")
                         .HasForeignKey("Chat.Domain.AggregateModels.ContactArchivalAggregate.Contact", "UserId")
                         .HasPrincipalKey("Chat.Domain.AggregateModels.ContactArchivalAggregate.ContactArchival", "UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("Chat.Domain.QueryEntities.Contact", b =>
-                {
-                    b.HasOne("Chat.Domain.AggregateModels.ReciprocalContactAggregate.Contact", null)
-                        .WithOne()
-                        .HasForeignKey("Chat.Domain.QueryEntities.Contact", "Id")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
