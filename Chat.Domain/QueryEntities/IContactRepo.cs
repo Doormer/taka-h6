@@ -1,8 +1,6 @@
-﻿using Chat.Domain.QueryEntities;
+namespace Chat.Domain.QueryEntities;
 
-namespace Chat.Application.Queries;
-
-public interface IChatQueries
+public interface IContactRepo
 {
     Task<Contact> GetContactsAsync(Guid userId);
     Task<Contact> GetArchivedContactsAsync(Guid userId);
