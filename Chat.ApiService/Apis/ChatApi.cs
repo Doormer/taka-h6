@@ -1,6 +1,7 @@
 using Chat.ApiService.Application.Behaviors;
 using Chat.ApiService.Application.Commands;
 using Chat.Application.Commands;
+using Chat.Domain.QueryEntities;
 using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace Chat.ApiService.Apis;
@@ -10,12 +11,10 @@ public static class ChatApi
     public static RouteGroupBuilder MapChatApiV1(this IEndpointRouteBuilder app)
     {
         var api = app.MapGroup("api/chat");
-
         //todo
         //setup API versioning
         
-        api.MapPost("/all-contact", AddContactAsync); ;
-
+        api.MapPost("/get-all-contact", GetAllContactsAsync); ;
         api.MapPost("/create-contact", AddContactAsync);
         api.MapPost("/archive-contact", ArchiveContactAsync);
         api.MapPost("/unarchive-contact", UnarchiveContactAsync);
@@ -90,5 +89,20 @@ public static class ChatApi
         }
 
         return TypedResults.Ok();
+    }
+    
+    public static async Task<Results<Ok<List<Contact>>, NotFound>> GetAllContactsAsync(Guid userId, [AsParameters] ChatServices services)
+    {
+        //todo
+        // get userId from token
+        try
+        {
+            var users = await services.Queries.GetContactsAsync(userId);
+            return TypedResults.Ok(users);
+        }
+        catch
+        {
+            return TypedResults.NotFound();
+        }
     }
 }
