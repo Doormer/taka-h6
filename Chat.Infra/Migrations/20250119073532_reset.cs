@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Chat.Infra.Migrations
 {
     /// <inheritdoc />
-    public partial class AddQueryContactWithAllInfo : Migration
+    public partial class reset : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

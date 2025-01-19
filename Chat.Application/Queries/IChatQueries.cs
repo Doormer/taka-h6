@@ -4,6 +4,6 @@ namespace Chat.Application.Queries;
 
 public interface IChatQueries
 {
-    Task<Contact> GetContactsAsync(Guid userId);
+    Task<List<Contact>> GetContactsAsync(Guid userId);
     Task<Contact> GetArchivedContactsAsync(Guid userId);
 }
