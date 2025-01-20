@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Chat.Infra.Migrations
 {
     [DbContext(typeof(ChatContext))]
-    [Migration("20250119073532_reset")]
-    partial class reset
+    [Migration("20250120110122_init")]
+    partial class init
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -101,11 +101,6 @@ namespace Chat.Infra.Migrations
                 {
                     b.Property<int>("Id")
                         .HasColumnType("int");
-
-                    b.Property<string>("AvatarUrl")
-                        .IsRequired()
-                        .HasColumnType("longtext")
-                        .HasColumnName("AvatarUrl");
 
                     b.Property<Guid>("ContactUserId")
                         .ValueGeneratedOnUpdateSometimes()

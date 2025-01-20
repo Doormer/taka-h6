@@ -1,5 +1,6 @@
 using MediatR;
 using System.Runtime.Serialization;
+
 namespace Chat.Application.Commands;
 
 [DataContract]
