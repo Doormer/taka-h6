@@ -99,11 +99,6 @@ namespace Chat.Infra.Migrations
                     b.Property<int>("Id")
                         .HasColumnType("int");
 
-                    b.Property<string>("AvatarUrl")
-                        .IsRequired()
-                        .HasColumnType("longtext")
-                        .HasColumnName("AvatarUrl");
-
                     b.Property<Guid>("ContactUserId")
                         .ValueGeneratedOnUpdateSometimes()
                         .HasColumnType("char(36)")

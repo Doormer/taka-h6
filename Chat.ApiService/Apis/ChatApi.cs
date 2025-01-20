@@ -1,9 +1,8 @@
 using Chat.ApiService.Application.Behaviors;
 using Chat.ApiService.Application.Commands;
 using Chat.Application.Commands;
-using Chat.Domain.QueryEntities;
 using Microsoft.AspNetCore.Http.HttpResults;
-using System.Linq;
+using Contact = Chat.Application.Queries.Contact;
 
 namespace Chat.ApiService.Apis;
 
@@ -12,9 +11,10 @@ public static class ChatApi
     public static RouteGroupBuilder MapChatApiV1(this IEndpointRouteBuilder app)
     {
         var api = app.MapGroup("api/chat");
+
         //todo
         //setup API versioning
-        
+
         api.MapPost("/get-active-contacts", GetActiveContactsAsync);
         api.MapPost("/get-archived-contact", GetArchivedContactsAsync);
         api.MapPost("/create-contact", AddContactAsync);
@@ -37,7 +37,8 @@ public static class ChatApi
         // }
         // Domain drive design + Command Query responsibility Seperation (CQRS 
 
-        var requestAddContact = new AddContactCommand { UserId = command.UserId, ContactUserId = command.ContactUserId };
+        var requestAddContact = new AddContactCommand
+            { UserId = command.UserId, ContactUserId = command.ContactUserId };
 
         services.Logger.LogInformation(
             "Sending command: {CommandName} ({@Command})",
@@ -52,7 +53,7 @@ public static class ChatApi
         ArchiveContactCommand command,
         [AsParameters] ChatServices services)
     {
-        try 
+        try
         {
             services.Logger.LogInformation(
                 "Receiving archive command for userId: {UserId}, contactUserId: {ContactUserId}",
@@ -68,7 +69,7 @@ public static class ChatApi
             return TypedResults.Problem(ex.Message, statusCode: 500);
         }
     }
-    
+
     public static async Task<Results<Ok, BadRequest<string>, ProblemHttpResult>> UnarchiveContactAsync(
         UnarchiveContactCommand command,
         [AsParameters] ChatServices services)
@@ -81,14 +82,16 @@ public static class ChatApi
         await services.Mediator.Send(command);
         return TypedResults.Ok();
     }
-    
-    public static async Task<Results<Ok<List<Contact>>, NotFound>> GetActiveContactsAsync(Guid userId, [AsParameters] ChatServices services)
+
+    public static async Task<Results<Ok<List<Contact>>, NotFound>> GetActiveContactsAsync(
+        Guid userId,
+        [AsParameters] ChatServices services)
     {
         //todo
         // get userId from token
         try
         {
-            var users = await services.Queries.GetContactsAsync(userId);
+            var users = await services.Queries.GetActiveContactsAsync(userId);
             return TypedResults.Ok(users);
         }
         catch
@@ -97,7 +100,9 @@ public static class ChatApi
         }
     }
 
-    public static async Task<Results<Ok<List<Contact>>, NotFound>> GetArchivedContactsAsync(Guid userId, [AsParameters] ChatServices services)
+    public static async Task<Results<Ok<List<Contact>>, NotFound>> GetArchivedContactsAsync(
+        Guid userId,
+        [AsParameters] ChatServices services)
     {
         try
         {

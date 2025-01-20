@@ -1,21 +1,22 @@
-using System.IO.Compression;
 using Chat.Domain.SeedWork;
 
 namespace Chat.Domain.QueryEntities;
 
-public class Contact : Entity
+public sealed class Contact : Entity
 {
-    public Guid UserId { get; private set; } 
-    public Guid ContactUserId { get; private set; }
-    public bool IsArchived { get; private set; }
-    public string AvatarUrl { get; private set; }
-    public string lastMessage { get; private set; }
-
-    public Contact(Guid userId, Guid contactUserId, string avatarUrl)
+    public Contact(Guid userId, Guid contactUserId)
     {
         UserId = userId;
-        contactUserId = contactUserId;
-        AvatarUrl = avatarUrl;
+        ContactUserId = contactUserId;
+        AvatarUrl =
+            "https://media.licdn.com/dms/image/v2/D5603AQETXS6tkEld2w/profile-displayphoto-shrink_200_200/profile-displayphoto-shrink_200_200/0/1720954054782?e=1743033600&v=beta&t=MW1lLGnY2XInXrrI1LeWQ_EMHapvNl3nFtQ7ZFjPQ98";
         lastMessage = "Josie doesnt want this anymore.";
     }
+
+    public Guid UserId { get; private set; }
+    public Guid ContactUserId { get; private set; }
+    public bool IsArchived { get; private set; }
+
+    public string AvatarUrl { get; private set; }
+    public string lastMessage { get; private set; }
 }

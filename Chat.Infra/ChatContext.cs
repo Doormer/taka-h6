@@ -26,7 +26,7 @@ public class ChatContext : DbContext, IUnitOfWork
     public DbSet<ContactArchival> ArchiveContacts { get; set; }
 
     public DbSet<Domain.AggregateModels.ContactArchivalAggregate.Contact> Contacts { get; set; }
-    
+
     public DbSet<Domain.QueryEntities.Contact> contactsWithAllInfo { get; set; }
 
 

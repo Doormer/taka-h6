@@ -2,7 +2,7 @@ using Chat.Domain.SeedWork;
 
 namespace Chat.Domain.AggregateModels.ReciprocalContactAggregate;
 
-public class Contact(Guid userId, Guid contactUserId) : Entity
+public sealed class Contact(Guid userId, Guid contactUserId) : Entity
 {
     public Guid UserId { get; } = userId;
     public Guid ContactUserId { get; } = contactUserId;
