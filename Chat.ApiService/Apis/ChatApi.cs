@@ -3,6 +3,7 @@ using Chat.ApiService.Application.Commands;
 using Chat.Application.Commands;
 using Chat.Domain.QueryEntities;
 using Microsoft.AspNetCore.Http.HttpResults;
+using System.Linq;
 
 namespace Chat.ApiService.Apis;
 
@@ -14,7 +15,8 @@ public static class ChatApi
         //todo
         //setup API versioning
         
-        api.MapPost("/get-all-contact", GetAllContactsAsync); ;
+        api.MapPost("/get-active-contacts", GetActiveContactsAsync);
+        api.MapPost("/get-archived-contact", GetArchivedContactsAsync);
         api.MapPost("/create-contact", AddContactAsync);
         api.MapPost("/archive-contact", ArchiveContactAsync);
         api.MapPost("/unarchive-contact", UnarchiveContactAsync);
@@ -35,41 +37,36 @@ public static class ChatApi
         // }
         // Domain drive design + Command Query responsibility Seperation (CQRS 
 
-        var requestAddContact = new AddContactCommand(command.UserId, command.UserContactId);
+        var requestAddContact = new AddContactCommand { UserId = command.UserId, ContactUserId = command.ContactUserId };
 
         services.Logger.LogInformation(
             "Sending command: {CommandName} ({@Command})",
             requestAddContact.GetGenericTypeName(),
             requestAddContact);
 
-        var commandResult = await services.Mediator.Send(requestAddContact);
-
-        if (!commandResult)
-        {
-            return TypedResults.Problem("Add contact failed to process.", statusCode: 500);
-        }
-
+        await services.Mediator.Send(requestAddContact);
         return TypedResults.Ok();
     }
 
     public static async Task<Results<Ok, BadRequest<string>, ProblemHttpResult>> ArchiveContactAsync(
-        //TODO handle idempotency [FromHeader(Name = "x-requestid")] Guid requestId,
         ArchiveContactCommand command,
         [AsParameters] ChatServices services)
     {
-        services.Logger.LogInformation(
-            "Sending command: {CommandName} ({@Command})",
-            command.GetGenericTypeName(),
-            command);
-
-        var commandResult = await services.Mediator.Send(command);
-
-        if (!commandResult)
+        try 
         {
-            return TypedResults.Problem("Add contact failed to process.", statusCode: 500);
-        }
+            services.Logger.LogInformation(
+                "Receiving archive command for userId: {UserId}, contactUserId: {ContactUserId}",
+                command.UserId,
+                command.ContactUserId);
 
-        return TypedResults.Ok();
+            await services.Mediator.Send(command);
+            return TypedResults.Ok();
+        }
+        catch (Exception ex)
+        {
+            services.Logger.LogError(ex, "Error processing archive contact");
+            return TypedResults.Problem(ex.Message, statusCode: 500);
+        }
     }
     
     public static async Task<Results<Ok, BadRequest<string>, ProblemHttpResult>> UnarchiveContactAsync(
@@ -81,17 +78,11 @@ public static class ChatApi
             command.GetGenericTypeName(),
             command);
 
-        var commandResult = await services.Mediator.Send(command);
-
-        if (!commandResult)
-        {
-            return TypedResults.Problem("Add contact failed to process.", statusCode: 500);
-        }
-
+        await services.Mediator.Send(command);
         return TypedResults.Ok();
     }
     
-    public static async Task<Results<Ok<List<Contact>>, NotFound>> GetAllContactsAsync(Guid userId, [AsParameters] ChatServices services)
+    public static async Task<Results<Ok<List<Contact>>, NotFound>> GetActiveContactsAsync(Guid userId, [AsParameters] ChatServices services)
     {
         //todo
         // get userId from token
@@ -99,6 +90,19 @@ public static class ChatApi
         {
             var users = await services.Queries.GetContactsAsync(userId);
             return TypedResults.Ok(users);
+        }
+        catch
+        {
+            return TypedResults.NotFound();
+        }
+    }
+
+    public static async Task<Results<Ok<List<Contact>>, NotFound>> GetArchivedContactsAsync(Guid userId, [AsParameters] ChatServices services)
+    {
+        try
+        {
+            var users = await services.Queries.GetArchivedContactsAsync(userId);
+            return TypedResults.Ok(new List<Contact> { users });
         }
         catch
         {

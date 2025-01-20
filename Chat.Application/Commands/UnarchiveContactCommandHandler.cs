@@ -8,7 +8,7 @@ public class UnarchiveContactCommandHandler(
     IMediator mediator,
     IArchiveContactRepo archiveContactRepo,
     ILogger<UnarchiveContactCommandHandler> logger)
-    : IRequestHandler<UnarchiveContactCommand, bool>
+    : IRequestHandler<UnarchiveContactCommand, Unit>
 {
     private readonly IArchiveContactRepo _archiveContactRepo =
         archiveContactRepo ?? throw new ArgumentNullException(nameof(archiveContactRepo));
@@ -18,9 +18,10 @@ public class UnarchiveContactCommandHandler(
 
     private readonly IMediator _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
 
-    public async Task<bool> Handle(UnarchiveContactCommand message, CancellationToken cancellationToken)
+    public async Task<Unit> Handle(UnarchiveContactCommand request, CancellationToken cancellationToken)
     {
-        var contact = await _archiveContactRepo.FindContactAsync(message.UserId, message.UserContactId);
+        var contactUserId = request.ContactUserId;
+        var contact = await _archiveContactRepo.FindContactAsync(request.UserId, request.ContactUserId);
         if (contact is null)
         {
             throw new Exception("Contact not found");
@@ -30,7 +31,7 @@ public class UnarchiveContactCommandHandler(
 
         _logger.LogInformation("ArchivingContact - contact: {@contact}", contact);
         _archiveContactRepo.UpdateArchiveStatus(contact);
-        // or could be called as SaveAggregateAsync
-        return await _archiveContactRepo.UnitOfWork.SaveEntitiesAsync(cancellationToken);
+        await _archiveContactRepo.UnitOfWork.SaveEntitiesAsync(cancellationToken);
+        return Unit.Value;
     }
 }

@@ -9,7 +9,7 @@ public class ChatQueries(ChatContext context)
 {
     public async Task<List<Contact>> GetContactsAsync(Guid userId)
     {
-        return await context.contactsWithAllInfo.Where(c => c.UserId == userId).ToListAsync();
+        return await context.contactsWithAllInfo.ToListAsync();
     }
 
     public Task<Contact> GetArchivedContactsAsync(Guid userId)
