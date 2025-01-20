@@ -9,19 +9,24 @@ namespace Chat.Domain.AggregateModels.MessageAggregate;
 public class MessageContent
 {
     public Guid Id { get; private set; }
-    public string Value { get; private set; }
+    public object Content { get; private set; }
     public MessageType Type { get; private set; }
+    public string? ContentType { get; private set; } 
 
-    public MessageContent(string value, MessageType type)
+    public MessageContent(object content, MessageType type, string? contentType = null)
     {
-        if (string.IsNullOrEmpty(value))
-            throw new ArgumentNullException(nameof(value));
+        if (content == null)
+            throw new ArgumentNullException(nameof(content));
             
-        if (value.Length > 5000)
-            throw new ArgumentException("Message content too long", nameof(value));
+        if (type == MessageType.Text && content is string textContent)
+        {
+            if (textContent.Length > 5000)
+                throw new ArgumentException("Text content too long", nameof(content));
+        }
 
         Id = Guid.NewGuid();
-        Value = value;
+        Content = content;
         Type = type;
+        ContentType = contentType;
     }
 } 
