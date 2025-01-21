@@ -11,13 +11,14 @@ internal class UnreadMessageEntityTypeConfiguration : IEntityTypeConfiguration<U
 
         unreadMessageConfiguration.Ignore(m => m.DomainEvents);
 
-        unreadMessageConfiguration.Property(m => m.MessageID).HasColumnName("MessageID");
-        unreadMessageConfiguration.Property(m => m.ContactId).HasColumnName("ContactId"); ;
+        unreadMessageConfiguration.Property(m => m.MessageId).HasColumnName("MessageId");
+        unreadMessageConfiguration.Property(m => m.ContactId).HasColumnName("ContactId");
         unreadMessageConfiguration.Property(m => m.ReadTime).HasColumnName("ReadTime");
 
         unreadMessageConfiguration.HasOne<Contact>()
             .WithMany()
-            .HasForeignKey(m => m.ContactId);
+            .HasForeignKey(m => m.ContactId)
+            .HasPrincipalKey(c => c.UserId);
 
         unreadMessageConfiguration.HasIndex(m => m.ContactId);
         unreadMessageConfiguration.HasIndex(m => m.ReadTime);

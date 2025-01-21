@@ -6,11 +6,11 @@ public class UnreadMessage : Entity, IAggregateRoot
 {
     public UnreadMessage(Guid messageId, Guid contactId)
     {
-        MessageID = messageId;
+        MessageId = messageId;
         ContactId = contactId;
     }
 
-    public Guid MessageID { get; private set; }
+    public Guid MessageId { get; private set; }
     public Guid ContactId { get; private set; }
     public DateTime? ReadTime { get; private set; }
 
