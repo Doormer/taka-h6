@@ -3,6 +3,7 @@ using Chat.Application.Commands;
 using Chat.Application.Queries;
 using Chat.Domain.AggregateModels.ContactArchivalAggregate;
 using Chat.Domain.AggregateModels.ReciprocalContactAggregate;
+using Chat.Domain.AggregateModels.UnreadMessageAggregate;
 using Chat.Infra;
 using Chat.Infra.Idempotency;
 using Chat.Infra.Repositories;
@@ -46,6 +47,7 @@ internal static class Extensions
 
         services.AddScoped<IReciprocalContactRepo, ReciprocalContactRepo>();
         services.AddScoped<IArchiveContactRepo, ContactArchivalRepo>();
+        services.AddScoped<IUnreadMessageRepo, UnreadMessageRepo>();
         services.AddScoped<IRequestManager, RequestManager>();
         services.AddScoped<IChatQueries, ChatQueries>();
     }
