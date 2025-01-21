@@ -16,7 +16,7 @@ public static class ChatApi
         //setup API versioning
 
         api.MapPost("/get-active-contacts", GetActiveContactsAsync);
-        api.MapPost("/get-archived-contact", GetArchivedContactsAsync);
+        api.MapPost("/get-archived-contact", GetArchivedContactAsync);
         api.MapPost("/create-contact", AddContactAsync);
         api.MapPost("/archive-contact", ArchiveContactAsync);
         api.MapPost("/unarchive-contact", UnarchiveContactAsync);
@@ -100,14 +100,14 @@ public static class ChatApi
         }
     }
 
-    public static async Task<Results<Ok<List<Contact>>, NotFound>> GetArchivedContactsAsync(
+    public static async Task<Results<Ok<Contact>, NotFound>> GetArchivedContactAsync(
         Guid userId,
         [AsParameters] ChatServices services)
     {
         try
         {
-            var users = await services.Queries.GetArchivedContactsAsync(userId);
-            return TypedResults.Ok(new List<Contact> { users });
+            var contact = await services.Queries.GetArchivedContactsAsync(userId);
+            return TypedResults.Ok(contact);
         }
         catch
         {
