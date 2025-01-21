@@ -5,12 +5,6 @@ using Microsoft.Extensions.Logging;
 
 namespace Chat.Application.Commands;
 
-public class GetUnreadMessageCommand : IRequest<int>
-{
-    public Guid UserId { get; set; }
-    public Guid UserContactId { get; set; }
-}
-
 public class GetUnreadMessageCommandHandler(
     IMediator mediator,
     IUnreadMessageRepo unreadMessageRepo,
@@ -26,18 +20,17 @@ public class GetUnreadMessageCommandHandler(
 
     public async Task<int> Handle(GetUnreadMessageCommand message, CancellationToken cancellationToken)
     {
-        var unreadMessageCount = await _unreadMessageRepo.GetUnreadMessageCount(message.UserId, message.UserContactId);
-        if (unreadMessageCount is null)
-        {
-            throw new Exception("UnreadMessageCount not found");
-        }
+        var unreadMessageCount = await _unreadMessageRepo.GetUnreadMessageCount(message.ContactId);
+        // if (unreadMessageCount == null)
+        // {
+        //     throw new Exception("UnreadMessageCount not found");
+        // }
 
         _logger.LogInformation(
-            "Getting unread message count - UserId: {UserId}, ContactId: {ContactId}, Count: {Count}",
-            message.UserId,
-            message.UserContactId,
-            unreadMessageCount.NumOfUnreadMessages);
+            "Getting unread message count - ContactId: {ContactId}, UnreadMessageCount: {Count}",
+            message.ContactId,
+            unreadMessageCount);
 
-        return unreadMessageCount.NumOfUnreadMessages;
+        return unreadMessageCount;
     }
 }
