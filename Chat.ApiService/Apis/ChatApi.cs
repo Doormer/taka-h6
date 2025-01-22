@@ -15,6 +15,7 @@ public static class ChatApi
 
         api.MapPost("/create-contact", AddContactAsync);
         api.MapPost("/archive-contact", ArchiveContactAsync);
+        api.MapPost("/get-unread-message-count", GetUnreadMessageCountAsync);
 
         return api;
     }
@@ -64,7 +65,27 @@ public static class ChatApi
 
         if (!commandResult)
         {
-            return TypedResults.Problem("Add contact failed to process.", statusCode: 500);
+            return TypedResults.Problem("Archive contact failed to process.", statusCode: 500);
+        }
+
+        return TypedResults.Ok();
+    }
+    public static async Task<Results<Ok, BadRequest<string>, ProblemHttpResult>> GetUnreadMessageCountAsync(
+
+        //TODO handle idempotency [FromHeader(Name = "x-requestid")] Guid requestId,
+        GetUnreadMessageCommand command,
+        [AsParameters] ChatServices services)
+    {
+        services.Logger.LogInformation(
+            "Sending command: {CommandName} ({@Command})",
+            command.GetGenericTypeName(),
+            command);
+
+        var commandResult = await services.Mediator.Send(command);
+
+        if (commandResult < 0)
+        {
+            return TypedResults.Problem("Get wrong unread message count.", statusCode: 500);
         }
 
         return TypedResults.Ok();
