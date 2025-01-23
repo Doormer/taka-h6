@@ -35,7 +35,9 @@ var log = new LoggerConfiguration()
     .CreateLogger();
 
 // Map SignalR Hub
-app.MapHub<ChatHub>("/chatHub"); // 这里直接引用 ChatHub，因为在同一个命名空间中
+app.MapHub<ChatHub>("/chatHub").RequireCors(t=>t.WithOrigins(new string[] {"http://127.0.0.1:50327"}
+).AllowAnyMethod().AllowAnyHeader().AllowCredentials().AllowAnyOrigin()); // 这里直接引用 ChatHub，因为在同一个命名空间中
+
 
 app.MapChatApiV1();
 app.MapDefaultEndpoints();
