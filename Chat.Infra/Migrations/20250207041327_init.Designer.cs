@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Chat.Infra.Migrations
 {
     [DbContext(typeof(ChatContext))]
-    [Migration("20250131030758_Testing")]
-    partial class Testing
+    [Migration("20250207041327_init")]
+    partial class init
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -87,6 +87,49 @@ namespace Chat.Infra.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("users", (string)null);
+                });
+
+            modelBuilder.Entity("Chat.Domain.AggregateModels.MessageAggregate.Message", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasMaxLength(1000)
+                        .HasColumnType("varchar(1000)")
+                        .HasColumnName("Content");
+
+                    b.Property<bool>("IsRead")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("tinyint(1)")
+                        .HasDefaultValue(false)
+                        .HasColumnName("IsRead");
+
+                    b.Property<Guid>("ReceiverId")
+                        .HasColumnType("char(36)")
+                        .HasColumnName("ReceiverId");
+
+                    b.Property<Guid>("SenderId")
+                        .HasColumnType("char(36)")
+                        .HasColumnName("SenderId");
+
+                    b.Property<DateTime>("SentTime")
+                        .HasColumnType("datetime(6)")
+                        .HasColumnName("SentTime");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ReceiverId");
+
+                    b.HasIndex("SenderId");
+
+                    b.HasIndex("SentTime");
+
+                    b.ToTable("messages", (string)null);
                 });
 
             modelBuilder.Entity("Chat.Domain.AggregateModels.ReciprocalContactAggregate.Contact", b =>

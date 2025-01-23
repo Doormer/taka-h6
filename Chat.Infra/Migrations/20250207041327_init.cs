@@ -7,12 +7,31 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Chat.Infra.Migrations
 {
     /// <inheritdoc />
-    public partial class Testing : Migration
+    public partial class init : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.AlterDatabase()
+                .Annotation("MySql:CharSet", "utf8mb4");
+
+            migrationBuilder.CreateTable(
+                name: "messages",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    SenderId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    ReceiverId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    Content = table.Column<string>(type: "varchar(1000)", maxLength: 1000, nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    SentTime = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    IsRead = table.Column<bool>(type: "tinyint(1)", nullable: false, defaultValue: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_messages", x => x.Id);
+                })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
@@ -68,6 +87,21 @@ namespace Chat.Infra.Migrations
                 table: "contacts",
                 columns: new[] { "UserId", "ContactUserId" },
                 unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_messages_ReceiverId",
+                table: "messages",
+                column: "ReceiverId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_messages_SenderId",
+                table: "messages",
+                column: "SenderId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_messages_SentTime",
+                table: "messages",
+                column: "SentTime");
         }
 
         /// <inheritdoc />
@@ -75,6 +109,9 @@ namespace Chat.Infra.Migrations
         {
             migrationBuilder.DropTable(
                 name: "contacts");
+
+            migrationBuilder.DropTable(
+                name: "messages");
 
             migrationBuilder.DropTable(
                 name: "users");

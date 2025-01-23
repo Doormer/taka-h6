@@ -86,6 +86,49 @@ namespace Chat.Infra.Migrations
                     b.ToTable("users", (string)null);
                 });
 
+            modelBuilder.Entity("Chat.Domain.AggregateModels.MessageAggregate.Message", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasMaxLength(1000)
+                        .HasColumnType("varchar(1000)")
+                        .HasColumnName("Content");
+
+                    b.Property<bool>("IsRead")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("tinyint(1)")
+                        .HasDefaultValue(false)
+                        .HasColumnName("IsRead");
+
+                    b.Property<Guid>("ReceiverId")
+                        .HasColumnType("char(36)")
+                        .HasColumnName("ReceiverId");
+
+                    b.Property<Guid>("SenderId")
+                        .HasColumnType("char(36)")
+                        .HasColumnName("SenderId");
+
+                    b.Property<DateTime>("SentTime")
+                        .HasColumnType("datetime(6)")
+                        .HasColumnName("SentTime");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ReceiverId");
+
+                    b.HasIndex("SenderId");
+
+                    b.HasIndex("SentTime");
+
+                    b.ToTable("messages", (string)null);
+                });
+
             modelBuilder.Entity("Chat.Domain.AggregateModels.ReciprocalContactAggregate.Contact", b =>
                 {
                     b.Property<int>("Id")
