@@ -14,7 +14,7 @@ builder.Services.AddProblemDetails();
 builder.Services.AddSignalR(); // 添加 SignalR 服务
 
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-//builder.Services.AddOpenApi();
+builder.Services.AddOpenApi();
 builder.Services.AddCors();
 
 builder.AddApplicationServices();
@@ -23,7 +23,7 @@ var app = builder.Build();
 
 // Configure the HTTP request pipeline.
 app.UseExceptionHandler();
-//app.UseCors( t=> t.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
+app.UseCors( t=> t.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
 
 if (app.Environment.IsDevelopment())
 {
