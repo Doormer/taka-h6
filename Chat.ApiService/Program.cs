@@ -14,7 +14,8 @@ builder.Services.AddProblemDetails();
 builder.Services.AddSignalR(); // 添加 SignalR 服务
 
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-builder.Services.AddOpenApi();
+//builder.Services.AddOpenApi();
+builder.Services.AddCors();
 
 builder.AddApplicationServices();
 
@@ -22,6 +23,7 @@ var app = builder.Build();
 
 // Configure the HTTP request pipeline.
 app.UseExceptionHandler();
+//app.UseCors( t=> t.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
 
 if (app.Environment.IsDevelopment())
 {
@@ -35,9 +37,7 @@ var log = new LoggerConfiguration()
     .CreateLogger();
 
 // Map SignalR Hub
-app.MapHub<ChatHub>("/chatHub").RequireCors(t=>t.WithOrigins(new string[] {"http://127.0.0.1:50327"}
-).AllowAnyMethod().AllowAnyHeader().AllowCredentials().AllowAnyOrigin()); // 这里直接引用 ChatHub，因为在同一个命名空间中
-
+app.MapHub<ChatHub>("/chatHub");
 
 app.MapChatApiV1();
 app.MapDefaultEndpoints();
