@@ -35,7 +35,8 @@ namespace Chat.Infra.Migrations
                     b.Property<bool>("IsArchived")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("tinyint(1)")
-                        .HasDefaultValue(false);
+                        .HasDefaultValue(false)
+                        .HasColumnName("IsArchived");
 
                     b.Property<Guid>("UserId")
                         .ValueGeneratedOnUpdateSometimes()
@@ -81,6 +82,7 @@ namespace Chat.Infra.Migrations
                         .HasColumnName("ContactUserId");
 
                     b.Property<Guid>("UserId")
+                        .ValueGeneratedOnUpdateSometimes()
                         .HasColumnType("char(36)")
                         .HasColumnName("UserId");
 
@@ -100,13 +102,9 @@ namespace Chat.Infra.Migrations
 
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<Guid>("ContactId")
-                        .HasColumnType("char(36)")
+                    b.Property<int>("ContactId")
+                        .HasColumnType("int")
                         .HasColumnName("ContactId");
-
-                    b.Property<Guid>("MessageId")
-                        .HasColumnType("char(36)")
-                        .HasColumnName("MessageId");
 
                     b.Property<DateTime?>("ReadTime")
                         .HasColumnType("datetime(6)")
@@ -142,7 +140,6 @@ namespace Chat.Infra.Migrations
                     b.HasOne("Chat.Domain.AggregateModels.ReciprocalContactAggregate.Contact", null)
                         .WithMany()
                         .HasForeignKey("ContactId")
-                        .HasPrincipalKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });

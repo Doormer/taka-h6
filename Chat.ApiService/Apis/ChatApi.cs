@@ -70,7 +70,7 @@ public static class ChatApi
 
         return TypedResults.Ok();
     }
-    public static async Task<Results<Ok, BadRequest<string>, ProblemHttpResult>> GetUnreadMessageCountAsync(
+    public static async Task<Results<Ok<int>, BadRequest<string>, ProblemHttpResult>> GetUnreadMessageCountAsync(
 
         //TODO handle idempotency [FromHeader(Name = "x-requestid")] Guid requestId,
         GetUnreadMessageCommand command,
@@ -88,6 +88,6 @@ public static class ChatApi
             return TypedResults.Problem("Get wrong unread message count.", statusCode: 500);
         }
 
-        return TypedResults.Ok();
+        return TypedResults.Ok(commandResult);
     }
 }

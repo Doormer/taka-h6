@@ -12,7 +12,7 @@ internal class ContactEntityTypeConfiguration : IEntityTypeConfiguration<Contact
 
         contactConfiguration.Property(c => c.UserId).HasColumnName("UserId");
         contactConfiguration.Property(c => c.ContactUserId).HasColumnName("ContactUserId");
-        contactConfiguration.Property(c => c.IsArchived).HasDefaultValue(false);
+        contactConfiguration.Property(c => c.IsArchived).HasColumnName("IsArchived").HasDefaultValue(false);
 
         // need to for entity to shared table
         contactConfiguration.HasOne<Domain.AggregateModels.ReciprocalContactAggregate.Contact>().WithOne()

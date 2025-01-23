@@ -9,7 +9,7 @@ public class UnreadMessageRepo(ChatContext context) : IUnreadMessageRepo
 
     public IUnitOfWork UnitOfWork => _context;
 
-    public async Task<int> GetUnreadMessageCount(Guid contactId)
+    public async Task<int> GetUnreadMessageCount(int contactId)
     {
         return await _context.UnreadMessages
             .Where(m => m.ContactId == contactId && m.ReadTime == null)

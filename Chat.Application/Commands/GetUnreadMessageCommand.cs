@@ -4,7 +4,7 @@ using System.Runtime.Serialization;
 namespace Chat.ApiService.Application.Commands;
 
 [DataContract]
-public class GetUnreadMessageCommand(Guid contactId) : IRequest<int>
+public class GetUnreadMessageCommand(int contactId) : IRequest<int>
 {
-    [DataMember] public Guid ContactId { get; private set; } = contactId;
+    [DataMember] public int ContactId { get; private set; } = contactId;
 }

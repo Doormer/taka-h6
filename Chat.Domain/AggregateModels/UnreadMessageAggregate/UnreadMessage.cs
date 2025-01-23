@@ -4,14 +4,12 @@ namespace Chat.Domain.AggregateModels.UnreadMessageAggregate;
 
 public class UnreadMessage : Entity, IAggregateRoot
 {
-    public UnreadMessage(Guid messageId, Guid contactId)
+    public UnreadMessage(int contactId)
     {
-        MessageId = messageId;
         ContactId = contactId;
     }
 
-    public Guid MessageId { get; private set; }
-    public Guid ContactId { get; private set; }
+    public int ContactId { get; private set; }
     public DateTime? ReadTime { get; private set; }
 
     //     public int NumOfUnreadMessages { get; private set; }

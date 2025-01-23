@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Chat.Infra.Migrations
 {
     /// <inheritdoc />
-    public partial class UpdateUnreadMessageEntity : Migration
+    public partial class InitialCreate : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -43,7 +43,6 @@ namespace Chat.Infra.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_contacts", x => x.Id);
-                    table.UniqueConstraint("AK_contacts_UserId", x => x.UserId);
                     table.ForeignKey(
                         name: "FK_contacts_users_UserId",
                         column: x => x.UserId,
@@ -59,8 +58,7 @@ namespace Chat.Infra.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    MessageId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
-                    ContactId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    ContactId = table.Column<int>(type: "int", nullable: false),
                     ReadTime = table.Column<DateTime>(type: "datetime(6)", nullable: true)
                 },
                 constraints: table =>
@@ -70,7 +68,7 @@ namespace Chat.Infra.Migrations
                         name: "FK_messages_contacts_ContactId",
                         column: x => x.ContactId,
                         principalTable: "contacts",
-                        principalColumn: "UserId",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
