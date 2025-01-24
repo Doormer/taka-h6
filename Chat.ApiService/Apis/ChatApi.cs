@@ -100,7 +100,7 @@ public static class ChatApi
         }
     }
 
-    public static async Task<Results<Ok<Contact>, NotFound>> GetArchivedContactAsync(
+    public static async Task<Results<Ok<List<Contact>>, NotFound>> GetArchivedContactAsync(
         Guid userId,
         [AsParameters] ChatServices services)
     {
