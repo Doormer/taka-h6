@@ -1,13 +1,75 @@
 using Microsoft.AspNetCore.SignalR;
+using System.Collections.Concurrent;
 
 namespace Chat.ApiService
 {
     public class ChatHub : Hub
     {
-        public async Task SendMessage(string userId, string message)
+        // 使用并发字典存储用户连接信息
+        private static readonly ConcurrentDictionary<string, string> _userConnections = new ConcurrentDictionary<string, string>();
+
+        // 连接时处理逻辑
+        public override async Task OnConnectedAsync()
         {
-            // 广播消息到所有连接的客户端
-            await Clients.All.SendAsync("ReceiveMessage", userId, message);
+            
+            /*
+            var userId = Context.GetHttpContext().Request.Query["userId"];
+            if (!string.IsNullOrEmpty(userId))
+            {
+                _userConnections[userId] = Context.ConnectionId;
+                Console.WriteLine($"User connected: {userId} with Connection ID: {Context.ConnectionId}");
+            }
+            else
+            {
+                Console.WriteLine("User connected without userId.");
+            }
+            */
+            await base.OnConnectedAsync();
         }
+
+        // 断开连接时处理逻辑
+        public override async Task OnDisconnectedAsync(Exception? exception)
+        {
+            var userId = _userConnections.FirstOrDefault(x => x.Value == Context.ConnectionId).Key;
+            if (!string.IsNullOrEmpty(userId))
+            {
+                _userConnections.TryRemove(userId, out _);
+                Console.WriteLine($"User disconnected: {userId}");
+            }
+            await base.OnDisconnectedAsync(exception);
+        }
+
+        // 发送消息逻辑
+        public async Task SendMessage(string targetUserId, string message)
+        {
+            // 获取当前发送者的 userId
+            var senderUserId = _userConnections.FirstOrDefault(x => x.Value == Context.ConnectionId).Key;
+
+            if (!string.IsNullOrEmpty(senderUserId) && _userConnections.TryGetValue(targetUserId, out var connectionId))
+            {
+                Console.WriteLine($"Sending message from {senderUserId} to {targetUserId} (Connection ID: {connectionId})");
+                await Clients.Client(connectionId).SendAsync("ReceiveMessage", senderUserId, message);
+            }
+            else
+            {
+                Console.WriteLine($"Message not delivered. Either sender or target user is not connected.");
+            }
+        }
+        
+        // login
+        public void Login(string userId)
+        {
+
+            Console.WriteLine($"{userId} trying to login，ConnectionId={Context.ConnectionId}");
+            if (!_userConnections.ContainsKey(userId))
+            {
+                _userConnections[userId] = Context.ConnectionId;
+
+                Console.WriteLine($"{userId}登录成功，ConnectionId={Context.ConnectionId}");
+            }
+
+        }
+        
+        
     }
 }
