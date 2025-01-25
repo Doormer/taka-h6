@@ -16,7 +16,6 @@ public sealed class Contact : Entity
     public Guid UserId { get; private set; }
     public Guid ContactUserId { get; private set; }
     public bool IsArchived { get; private set; }
-
     public string AvatarUrl { get; private set; }
     public string lastMessage { get; private set; }
 }

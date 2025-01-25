@@ -8,13 +8,13 @@ public class ChatQueries(ChatContext context)
 {
     public async Task<List<Contact>> GetActiveContactsAsync(Guid userId)
     {
-        var contacts = await context.contactsWithAllInfo.Where(c => c.UserId == userId).ToListAsync();
+        var contacts = await context.contactsWithAllInfo.Where(c => c.UserId == userId && c.IsArchived == false).ToListAsync();
         return contacts.Select(c => new Contact(c.ContactUserId, c.AvatarUrl, c.lastMessage, c.IsArchived)).ToList();
     }
 
     public async Task<List<Contact>> GetArchivedContactsAsync(Guid userId)
     {
-            var contacts = await context.contactsWithAllInfo.Where(c => c.UserId == userId && c.IsArchived).ToListAsync();
+            var contacts = await context.contactsWithAllInfo.Where(c => c.UserId == userId && c.IsArchived == true).ToListAsync();
             return contacts.Select(c => new Contact(c.ContactUserId, c.AvatarUrl, c.lastMessage, c.IsArchived)).ToList();
             
     }
