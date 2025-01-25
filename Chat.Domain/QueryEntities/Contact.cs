@@ -9,7 +9,7 @@ public sealed class Contact : Entity
         UserId = userId;
         ContactUserId = contactUserId;
         AvatarUrl =
-            "https://media.licdn.com/dms/image/v2/D5603AQETXS6tkEld2w/profile-displayphoto-shrink_200_200/profile-displayphoto-shrink_200_200/0/1720954054782?e=1743033600&v=beta&t=MW1lLGnY2XInXrrI1LeWQ_EMHapvNl3nFtQ7ZFjPQ98";
+            "https://scontent-syd2-1.xx.fbcdn.net/v/t39.30808-6/461300323_2641222842735125_4681823755008426309_n.jpg?_nc_cat=100&ccb=1-7&_nc_sid=6ee11a&_nc_ohc=8HboOGZaww4Q7kNvgEt4U-_&_nc_zt=23&_nc_ht=scontent-syd2-1.xx&_nc_gid=Ah9eazLO62G-SdnPxUJZliz&oh=00_AYA3h3E0QsQs5xWbfswuoFFCoH60UmPpJCU6rbn02AN2jg&oe=679A2484";
         lastMessage = "This bug belongs to Josie, all rights reserved.";
     }
 
