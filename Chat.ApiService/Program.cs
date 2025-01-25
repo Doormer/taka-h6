@@ -1,5 +1,6 @@
 using Chat.ApiService.Apis;
 using Chat.ApiService.Extensions;
+using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -12,6 +13,7 @@ builder.Services.AddProblemDetails();
 
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
+builder.Services.AddCors();
 
 builder.AddApplicationServices();
 
@@ -35,5 +37,7 @@ var log = new LoggerConfiguration()
 app.MapChatApiV1();
 
 app.MapDefaultEndpoints();
+
+app.UseCors( b => b.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
 
 app.Run();
