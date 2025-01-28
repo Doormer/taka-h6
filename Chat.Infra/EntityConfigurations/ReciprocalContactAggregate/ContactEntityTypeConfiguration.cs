@@ -10,7 +10,6 @@ internal class ContactEntityTypeConfiguration : IEntityTypeConfiguration<Contact
 
         contactConfiguration.Ignore(c => c.DomainEvents);
 
-
         contactConfiguration.Property(c => c.UserId).HasColumnName("UserId");
         contactConfiguration.Property(c => c.ContactUserId).HasColumnName("ContactUserId");
 
