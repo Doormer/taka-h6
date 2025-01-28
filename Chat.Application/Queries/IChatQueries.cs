@@ -2,5 +2,6 @@
 
 public interface IChatQueries
 {
-    Task GetContactAsync(Guid userId);
+    Task<List<Contact>> GetActiveContactsAsync(Guid userId);
+    Task<List<Contact>> GetArchivedContactsAsync(Guid userId);
 }

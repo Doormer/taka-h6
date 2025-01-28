@@ -14,9 +14,9 @@ using System.Runtime.Serialization;
 namespace Chat.ApiService.Application.Commands;
 
 [DataContract]
-public class AddContactCommand(Guid userId, Guid userContactId) : IRequest<bool>
+public class AddContactCommand : IRequest<Unit>
 {
-    [DataMember] public Guid UserId { get; private set; } = userId;
+    [DataMember] public Guid UserId { get; set; }
 
-    [DataMember] public Guid UserContactId { get; private set; } = userContactId;
+    [DataMember] public Guid ContactUserId { get; set; }
 }

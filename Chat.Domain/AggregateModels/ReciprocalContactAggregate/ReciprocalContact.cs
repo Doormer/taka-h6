@@ -2,7 +2,7 @@ using Chat.Domain.SeedWork;
 
 namespace Chat.Domain.AggregateModels.ReciprocalContactAggregate;
 
-public class ReciprocalContact(Guid userId, Guid contactUserId) : Entity, IAggregateRoot
+public sealed class ReciprocalContact(Guid userId, Guid contactUserId) : Entity, IAggregateRoot
 {
     private readonly Contact _contact = new(userId, contactUserId);
 

@@ -9,7 +9,7 @@ public class AddContactCommandHandler(
     IMediator mediator,
     IReciprocalContactRepo reciprocalContactRepo,
     ILogger<AddContactCommandHandler> logger)
-    : IRequestHandler<AddContactCommand, bool>
+    : IRequestHandler<AddContactCommand, Unit>
 {
     private readonly ILogger<AddContactCommandHandler> _logger =
         logger ?? throw new ArgumentNullException(nameof(logger));
@@ -19,15 +19,17 @@ public class AddContactCommandHandler(
     private readonly IReciprocalContactRepo _reciprocalContactRepo =
         reciprocalContactRepo ?? throw new ArgumentNullException(nameof(reciprocalContactRepo));
 
-    public async Task<bool> Handle(AddContactCommand message, CancellationToken cancellationToken)
+    public async Task<Unit> Handle(AddContactCommand request, CancellationToken cancellationToken)
     {
-        var reciprocalContact = new ReciprocalContact(message.UserId, message.UserContactId);
+        var contactUserId = request.ContactUserId;
+        var reciprocalContact = new ReciprocalContact(request.UserId, contactUserId);
 
         //todo
         //check whether the contact is already added
         _logger.LogInformation("AddingContact - contact: {@contact}", reciprocalContact);
         _reciprocalContactRepo.Add(reciprocalContact);
 
-        return await _reciprocalContactRepo.UnitOfWork.SaveEntitiesAsync(cancellationToken);
+        await _reciprocalContactRepo.UnitOfWork.SaveEntitiesAsync(cancellationToken);
+        return Unit.Value;
     }
 }
