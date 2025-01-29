@@ -20,17 +20,16 @@ public record Contact
     [DataMember( Name = "id" )]
     public Guid Id { get; init; }
     
-    [DataMember( Name = "avatarUrl" )]
+    [DataMember(Name = "userName")]
     public string UserName { get; init; }
     
     [DataMember( Name = "lastMessageCreatedTime" )]
     public DateTime LastMessageCreatedTime { get; init; }
     
-    [DataMember( Name = "isArchived" )]
-    
+    [DataMember(Name = "isRead")]
     public bool IsRead { get; init; }
-    [DataMember( Name = "isArchived" )]
     
+    [DataMember(Name = "avatarUrl")]
     public string AvatarUrl { get; init; }
     
     [DataMember( Name = "lastMessage" )]
