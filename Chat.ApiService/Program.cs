@@ -1,5 +1,6 @@
 using Chat.ApiService.Apis;
 using Chat.ApiService.Extensions;
+using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -40,5 +41,7 @@ var log = new LoggerConfiguration()
 app.MapChatApiV1();
 
 app.MapDefaultEndpoints();
+
+app.UseCors( b => b.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
 
 app.Run();
