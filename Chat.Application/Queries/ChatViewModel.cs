@@ -5,15 +5,15 @@ namespace Chat.Application.Queries;
 [DataContract]
 public record Contact
 {
-    public Contact(Guid contactId, string avatarUrl, string lastMessage, bool isArchived)
+    public Contact(Guid contactId, string avatarUrl, string userName, string lastMessage, bool isArchived, DateTime lastMessageCreatedTime, bool isRead)
     {
         Id = contactId;
         AvatarUrl = avatarUrl;
-        LastMessage = lastMessage;
         IsArchived = isArchived;
-        UserName = "userName";
-        LastMessageCreatedTime = DateTime.Now;
-        IsRead = false;
+        UserName = userName;
+        LastMessage = lastMessage;
+        LastMessageCreatedTime = lastMessageCreatedTime;
+        IsRead = isRead;
 
     }
 

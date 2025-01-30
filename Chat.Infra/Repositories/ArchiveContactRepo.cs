@@ -11,11 +11,13 @@ public class ContactArchivalRepo(ChatContext context) : IArchiveContactRepo
 
     public async Task<ContactArchival?> FindContactAsync(Guid userId, Guid contactUserId)
     {
-        return await _context.ArchiveContacts.Include(o => o.Contact).Where(ac => ac.UserId == userId)
-                             .Where(ac =>
-                                 ac.Contact != null &&
-                                 ac.Contact.ContactUserId == contactUserId) // Check for null explicitly
-                             .FirstOrDefaultAsync();
+        var ac = await _context.ArchiveContacts.Where(ac => ac.UserId == userId).FirstOrDefaultAsync();
+        if (ac is not null) {
+            await _context.Entry(ac).Collection(ac => ac.Contacts).Query()
+                          .Where(c => c.ContactUserId == contactUserId).FirstOrDefaultAsync();
+        }
+        
+        return ac;
     }
 
     public void UpdateArchiveStatus(ContactArchival contactArchival)

@@ -9,8 +9,7 @@ internal class ContactEntityTypeConfiguration : IEntityTypeConfiguration<Contact
         contactConfiguration.ToTable("contacts");
 
         contactConfiguration.Ignore(c => c.DomainEvents);
-        //TODO we haven't implemented avatarUrl and lastMessage
-        contactConfiguration.Ignore(c => c.AvatarUrl);
+        //TODO we haven't implemented lastMessage
         contactConfiguration.Ignore(c => c.lastMessage);
 
         contactConfiguration.Property(c => c.UserId).HasColumnName("UserId");
