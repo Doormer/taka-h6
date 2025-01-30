@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Chat.Infra.Migrations
 {
     [DbContext(typeof(ChatContext))]
-    [Migration("20250123023636_InitialCreate")]
+    [Migration("20250129221209_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -62,9 +62,20 @@ namespace Chat.Infra.Migrations
 
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("AvatarUrl")
+                        .IsRequired()
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime");
+
                     b.Property<Guid>("UserId")
                         .HasColumnType("char(36)")
                         .HasColumnName("UserId");
+
+                    b.Property<string>("Username")
+                        .IsRequired()
+                        .HasColumnType("varchar(50)");
 
                     b.HasKey("Id");
 
@@ -122,6 +133,31 @@ namespace Chat.Infra.Migrations
                     b.ToTable("messages", (string)null);
                 });
 
+            modelBuilder.Entity("Chat.Domain.QueryEntities.Contact", b =>
+                {
+                    b.Property<int>("Id")
+                        .HasColumnType("int");
+
+                    b.Property<Guid>("ContactUserId")
+                        .ValueGeneratedOnUpdateSometimes()
+                        .HasColumnType("char(36)")
+                        .HasColumnName("ContactUserId");
+
+                    b.Property<bool>("IsArchived")
+                        .ValueGeneratedOnUpdateSometimes()
+                        .HasColumnType("tinyint(1)")
+                        .HasColumnName("IsArchived");
+
+                    b.Property<Guid>("UserId")
+                        .ValueGeneratedOnUpdateSometimes()
+                        .HasColumnType("char(36)")
+                        .HasColumnName("UserId");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("contacts", (string)null);
+                });
+
             modelBuilder.Entity("Chat.Domain.AggregateModels.ContactArchivalAggregate.Contact", b =>
                 {
                     b.HasOne("Chat.Domain.AggregateModels.ReciprocalContactAggregate.Contact", null)
@@ -143,6 +179,15 @@ namespace Chat.Infra.Migrations
                     b.HasOne("Chat.Domain.AggregateModels.ReciprocalContactAggregate.Contact", null)
                         .WithMany()
                         .HasForeignKey("ContactId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Chat.Domain.QueryEntities.Contact", b =>
+                {
+                    b.HasOne("Chat.Domain.AggregateModels.ReciprocalContactAggregate.Contact", null)
+                        .WithOne()
+                        .HasForeignKey("Chat.Domain.QueryEntities.Contact", "Id")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });

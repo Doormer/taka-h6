@@ -5,9 +5,10 @@ namespace Chat.Application.Queries;
 [DataContract]
 public record Contact
 {
-    public Contact(Guid contactId, string avatarUrl, string lastMessage, bool isArchived)
+    public Contact(Guid id, int contactId, string avatarUrl, string lastMessage, bool isArchived)
     {
-        Id = contactId;
+        Id = id;
+        ContactId = contactId;
         AvatarUrl = avatarUrl;
         LastMessage = lastMessage;
         IsArchived = isArchived;
@@ -16,26 +17,29 @@ public record Contact
         IsRead = false;
 
     }
-    
-    [DataMember( Name = "id" )]
+
+    [DataMember(Name = "id")]
     public Guid Id { get; init; }
-    
-    [DataMember( Name = "avatarUrl" )]
+
+    [DataMember(Name = "contactId")]
+    public int ContactId { get; init; }
+
+    [DataMember(Name = "avatarUrl")]
     public string UserName { get; init; }
-    
-    [DataMember( Name = "lastMessageCreatedTime" )]
+
+    [DataMember(Name = "lastMessageCreatedTime")]
     public DateTime LastMessageCreatedTime { get; init; }
-    
-    [DataMember( Name = "isArchived" )]
-    
+
+    [DataMember(Name = "isArchived")]
+
     public bool IsRead { get; init; }
-    [DataMember( Name = "isArchived" )]
-    
+    [DataMember(Name = "isArchived")]
+
     public string AvatarUrl { get; init; }
-    
-    [DataMember( Name = "lastMessage" )]
+
+    [DataMember(Name = "lastMessage")]
     public string LastMessage { get; init; }
-    
-    [DataMember( Name = "isArchived" )]
+
+    [DataMember(Name = "isArchived")]
     public bool IsArchived { get; init; }
 }

@@ -23,7 +23,6 @@ namespace Chat.Infra.Migrations
             MySqlModelBuilderExtensions.AutoIncrementColumns(modelBuilder);
 
             modelBuilder.Entity("Chat.Domain.AggregateModels.ContactArchivalAggregate.Contact", b =>
-
                 {
                     b.Property<int>("Id")
                         .HasColumnType("int");
@@ -81,7 +80,6 @@ namespace Chat.Infra.Migrations
                 });
 
             modelBuilder.Entity("Chat.Domain.AggregateModels.ReciprocalContactAggregate.Contact", b =>
-
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -107,9 +105,32 @@ namespace Chat.Infra.Migrations
                     b.ToTable("contacts", (string)null);
                 });
 
+            modelBuilder.Entity("Chat.Domain.AggregateModels.UnreadMessageAggregate.UnreadMessage", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("ContactId")
+                        .HasColumnType("int")
+                        .HasColumnName("ContactId");
+
+                    b.Property<DateTime?>("ReadTime")
+                        .HasColumnType("datetime(6)")
+                        .HasColumnName("ReadTime");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ContactId");
+
+                    b.HasIndex("ReadTime");
+
+                    b.ToTable("messages", (string)null);
+                });
 
             modelBuilder.Entity("Chat.Domain.QueryEntities.Contact", b =>
-
                 {
                     b.Property<int>("Id")
                         .HasColumnType("int");
@@ -134,7 +155,6 @@ namespace Chat.Infra.Migrations
                     b.ToTable("contacts", (string)null);
                 });
 
-
             modelBuilder.Entity("Chat.Domain.AggregateModels.ContactArchivalAggregate.Contact", b =>
                 {
                     b.HasOne("Chat.Domain.AggregateModels.ReciprocalContactAggregate.Contact", null)
@@ -151,13 +171,20 @@ namespace Chat.Infra.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("Chat.Domain.AggregateModels.UnreadMessageAggregate.UnreadMessage", b =>
+                {
+                    b.HasOne("Chat.Domain.AggregateModels.ReciprocalContactAggregate.Contact", null)
+                        .WithMany()
+                        .HasForeignKey("ContactId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
 
             modelBuilder.Entity("Chat.Domain.QueryEntities.Contact", b =>
                 {
                     b.HasOne("Chat.Domain.AggregateModels.ReciprocalContactAggregate.Contact", null)
                         .WithOne()
                         .HasForeignKey("Chat.Domain.QueryEntities.Contact", "Id")
-
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
