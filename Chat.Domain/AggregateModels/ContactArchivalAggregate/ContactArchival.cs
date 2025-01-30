@@ -4,27 +4,33 @@ namespace Chat.Domain.AggregateModels.ContactArchivalAggregate;
 
 public sealed class ContactArchival : Entity, IAggregateRoot
 {
-    public ContactArchival(Guid userId, string username, string avatarUrl)
+    public ContactArchival(Guid userId, string userName, string avatarUrl)
     {
         UserId = userId;
-        Username = username;
+        UserName = userName;
         AvatarUrl = avatarUrl;
         CreatedAt = DateTime.UtcNow;
     }
 
     public Guid UserId { get; private set; }
-    public string Username { get; private set; }
+    public string UserName { get; private set; }
     public string AvatarUrl { get; private set; }
     public DateTime CreatedAt { get; private set; }
-    public Contact? Contact { get; private set; }
+    
+    /// <summary>
+    /// The contact that the user is archiving 
+    /// </summary>
+    /// <remarks>
+    /// It must be a list in order for EF to establish the FK correctly
+    /// </remarks>
+    public List<Contact> Contacts { get; private set; }
 
     public void UpdateArchivedStatus(bool isArchived)
     {
-        if (Contact is null)
+        if (Contacts is null || Contacts.Count != 1)
         {
-            throw new Exception("Contact is null");
+            throw new Exception("Contact is not found or more than one contact found");
         }
-
-        Contact.UpdateArchivedStatus(isArchived);
+        Contacts.First().UpdateArchivedStatus(isArchived);
     }
 }

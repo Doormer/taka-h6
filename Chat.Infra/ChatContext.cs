@@ -27,7 +27,8 @@ public class ChatContext : DbContext, IUnitOfWork
 
     public DbSet<Domain.AggregateModels.ContactArchivalAggregate.Contact> Contacts { get; set; }
 
-    public DbSet<Domain.QueryEntities.Contact> contactsWithAllInfo { get; set; }
+    public DbSet<Domain.QueryEntities.Contact> rawContacts { get; set; }
+    public DbSet<Domain.QueryEntities.User> rawUsers { get; set; }
 
 
     public bool HasActiveTransaction => _currentTransaction != null;
@@ -61,6 +62,7 @@ public class ChatContext : DbContext, IUnitOfWork
             new EntityConfigurations.ArchiveContactAggregate.ContactEntityTypeConfiguration());
         modelBuilder.ApplyConfiguration(new ArchiveContactEntityTypeConfiguration());
         modelBuilder.ApplyConfiguration(new EntityConfigurations.QueryEntities.ContactEntityTypeConfiguration());
+        modelBuilder.ApplyConfiguration(new EntityConfigurations.QueryEntities.UserEntityTypeConfiguration());
     }
 
     public async Task<IDbContextTransaction> BeginTransactionAsync()

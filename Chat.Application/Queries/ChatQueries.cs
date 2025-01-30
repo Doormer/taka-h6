@@ -8,10 +8,10 @@ public class ChatQueries(ChatContext context)
 {
     public async Task<List<Contact>> GetActiveContactsAsync(Guid userId)
     {
-        var contacts = await context.contactsWithAllInfo
+        var contacts = await context.rawContacts
             .Where(c => c.UserId == userId && c.IsArchived == false)
             .Join(
-                context.Set<Domain.AggregateModels.ContactArchivalAggregate.ContactArchival>(),
+                context.rawUsers,
                 c => c.ContactUserId,
                 u => u.UserId,
                 (c, u) => new { Contact = c, User = u }
@@ -19,20 +19,22 @@ public class ChatQueries(ChatContext context)
             .ToListAsync();
         return contacts.Select(x => new Contact(
             x.Contact.ContactUserId,
-            x.Contact.AvatarUrl,
+            x.User.AvatarUrl,
+            x.User.UserName,
             x.Contact.lastMessage,
-            x.Contact.IsArchived)
-        {
-            UserName = x.User.Username
-        }).ToList();
+            x.Contact.IsArchived,
+            // hardcoded for now
+            DateTime.Now,
+            false)
+       ).ToList();
     }
 
     public async Task<List<Contact>> GetArchivedContactsAsync(Guid userId)
     {
-        var contacts = await context.contactsWithAllInfo
+        var contacts = await context.rawContacts
             .Where(c => c.UserId == userId && c.IsArchived == true)
             .Join(
-                context.Set<Domain.AggregateModels.ContactArchivalAggregate.ContactArchival>(),
+                context.rawUsers,
                 c => c.ContactUserId,
                 u => u.UserId,
                 (c, u) => new { Contact = c, User = u }
@@ -40,12 +42,13 @@ public class ChatQueries(ChatContext context)
             .ToListAsync();
         return contacts.Select(x => new Contact(
             x.Contact.ContactUserId,
-            x.Contact.AvatarUrl,
+            x.User.AvatarUrl,
+            x.User.UserName,
             x.Contact.lastMessage,
-            x.Contact.IsArchived)
-        {
-            UserName = x.User.Username,
-            AvatarUrl = x.User.AvatarUrl
-        }).ToList();
+            x.Contact.IsArchived,
+            // hardcoded for now
+            DateTime.Now,
+            false)
+        ).ToList();
     }
 }
