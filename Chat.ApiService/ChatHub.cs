@@ -1,12 +1,20 @@
 using Microsoft.AspNetCore.SignalR;
 using System.Collections.Concurrent;
+using System;
+using Chat.Domain.AggregateModels.MessageAggregate;
 
 namespace Chat.ApiService
 {
     public class ChatHub : Hub
     {
+        private readonly IMessageRepo _messageRepo;
         // 使用并发字典存储用户连接信息
         private static readonly ConcurrentDictionary<string, string> _userConnections = new ConcurrentDictionary<string, string>();
+
+        public ChatHub(IMessageRepo messageRepo)
+        {
+            _messageRepo = messageRepo ?? throw new ArgumentNullException(nameof(messageRepo));
+        }
 
         // 连接时处理逻辑
         public override async Task OnConnectedAsync()
@@ -42,13 +50,33 @@ namespace Chat.ApiService
         // 发送消息逻辑
         public async Task SendMessage(string targetUserId, string message)
         {
-            // 获取当前发送者的 userId
             var senderUserId = _userConnections.FirstOrDefault(x => x.Value == Context.ConnectionId).Key;
 
             if (!string.IsNullOrEmpty(senderUserId) && _userConnections.TryGetValue(targetUserId, out var connectionId))
             {
-                Console.WriteLine($"Sending message from {senderUserId} to {targetUserId} (Connection ID: {connectionId})");
-                await Clients.Client(connectionId).SendAsync("ReceiveMessage", senderUserId, message);
+                try
+                {
+                    // 创建消息实体
+                    var messageEntity = new Message(
+                        Guid.Parse(senderUserId),
+                        Guid.Parse(targetUserId),
+                        message,
+                        DateTime.UtcNow
+                    );
+
+                    // 保存到数据库
+                    _messageRepo.Add(messageEntity);
+                    await _messageRepo.UnitOfWork.SaveEntitiesAsync();
+
+                    // 发送实时消息
+                    Console.WriteLine($"Sending message from {senderUserId} to {targetUserId} (Connection ID: {connectionId})");
+                    await Clients.Client(connectionId).SendAsync("ReceiveMessage", senderUserId, message);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Error saving message to database: {ex.Message}");
+                    throw;
+                }
             }
             else
             {
