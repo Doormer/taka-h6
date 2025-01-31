@@ -1,6 +1,8 @@
 using Chat.ApiService.Application.Behaviors;
 using Chat.ApiService.Application.Commands;
+using Chat.Application.Commands;
 using Microsoft.AspNetCore.Http.HttpResults;
+using Contact = Chat.Application.Queries.Contact;
 
 namespace Chat.ApiService.Apis;
 
@@ -13,8 +15,12 @@ public static class ChatApi
         //todo
         //setup API versioning
 
+        api.MapPost("/get-active-contacts", GetActiveContactsAsync);
+        api.MapPost("/get-archived-contact", GetArchivedContactAsync);
         api.MapPost("/create-contact", AddContactAsync);
         api.MapPost("/archive-contact", ArchiveContactAsync);
+        api.MapPost("/unarchive-contact", UnarchiveContactAsync);
+        api.MapPost("/get-unread-message-count", GetUnreadMessageCountAsync);
 
         return api;
     }
@@ -32,27 +38,87 @@ public static class ChatApi
         // }
         // Domain drive design + Command Query responsibility Seperation (CQRS 
 
-        var requestAddContact = new AddContactCommand(command.UserId, command.UserContactId);
+        var requestAddContact = new AddContactCommand
+            { UserId = command.UserId, ContactUserId = command.ContactUserId };
 
         services.Logger.LogInformation(
             "Sending command: {CommandName} ({@Command})",
             requestAddContact.GetGenericTypeName(),
             requestAddContact);
 
-        var commandResult = await services.Mediator.Send(requestAddContact);
-
-        if (!commandResult)
-        {
-            return TypedResults.Problem("Add contact failed to process.", statusCode: 500);
-        }
-
+        await services.Mediator.Send(requestAddContact);
         return TypedResults.Ok();
     }
 
     public static async Task<Results<Ok, BadRequest<string>, ProblemHttpResult>> ArchiveContactAsync(
+        ArchiveContactCommand command,
+        [AsParameters] ChatServices services)
+    {
+        try
+        {
+            services.Logger.LogInformation(
+                "Receiving archive command for userId: {UserId}, contactUserId: {ContactUserId}",
+                command.UserId,
+                command.ContactUserId);
+
+            await services.Mediator.Send(command);
+            return TypedResults.Ok();
+        }
+        catch (Exception ex)
+        {
+            services.Logger.LogError(ex, "Error processing archive contact");
+            return TypedResults.Problem(ex.Message, statusCode: 500);
+        }
+    }
+
+    public static async Task<Results<Ok, BadRequest<string>, ProblemHttpResult>> UnarchiveContactAsync(
+        UnarchiveContactCommand command,
+        [AsParameters] ChatServices services)
+    {
+        services.Logger.LogInformation(
+            "Sending command: {CommandName} ({@Command})",
+            command.GetGenericTypeName(),
+            command);
+
+        await services.Mediator.Send(command);
+        return TypedResults.Ok();
+    }
+
+    public static async Task<Results<Ok<List<Contact>>, NotFound>> GetActiveContactsAsync(
+        Guid userId,
+        [AsParameters] ChatServices services)
+    {
+        //todo
+        // get userId from token
+        try
+        {
+            var users = await services.Queries.GetActiveContactsAsync(userId);
+            return TypedResults.Ok(users);
+        }
+        catch
+        {
+            return TypedResults.NotFound();
+        }
+    }
+
+    public static async Task<Results<Ok<List<Contact>>, NotFound>> GetArchivedContactAsync(
+        Guid userId,
+        [AsParameters] ChatServices services)
+    {
+        try
+        {
+            var contact = await services.Queries.GetArchivedContactsAsync(userId);
+            return TypedResults.Ok(contact);
+        }
+        catch
+        {
+            return TypedResults.NotFound();
+        }
+    }
+    public static async Task<Results<Ok<int>, BadRequest<string>, ProblemHttpResult>> GetUnreadMessageCountAsync(
 
         //TODO handle idempotency [FromHeader(Name = "x-requestid")] Guid requestId,
-        ArchiveContactCommand command,
+        GetUnreadMessageCommand command,
         [AsParameters] ChatServices services)
     {
         services.Logger.LogInformation(
@@ -62,11 +128,11 @@ public static class ChatApi
 
         var commandResult = await services.Mediator.Send(command);
 
-        if (!commandResult)
+        if (commandResult < 0)
         {
-            return TypedResults.Problem("Add contact failed to process.", statusCode: 500);
+            return TypedResults.Problem("Get wrong unread message count.", statusCode: 500);
         }
 
-        return TypedResults.Ok();
+        return TypedResults.Ok(commandResult);
     }
 }

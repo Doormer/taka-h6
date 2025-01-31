@@ -2,7 +2,7 @@ using Chat.Domain.SeedWork;
 
 namespace Chat.Domain.AggregateModels.ContactArchivalAggregate;
 
-public class Contact(Guid userId, Guid contactUserId, bool isArchived) : Entity
+public sealed class Contact(Guid userId, Guid contactUserId, bool isArchived) : Entity
 {
     public Guid UserId { get; private set; } = userId;
     public Guid ContactUserId { get; } = contactUserId;

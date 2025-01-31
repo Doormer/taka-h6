@@ -1,5 +1,6 @@
 using Chat.ApiService.Apis;
 using Chat.ApiService.Extensions;
+using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -10,8 +11,12 @@ builder.AddServiceDefaults();
 // Add services to the container.
 builder.Services.AddProblemDetails();
 
+// 简化的 CORS 配置
+builder.Services.AddCors();
+
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
+builder.Services.AddCors();
 
 builder.AddApplicationServices();
 
@@ -19,6 +24,7 @@ var app = builder.Build();
 
 // Configure the HTTP request pipeline.
 app.UseExceptionHandler();
+app.UseCors( t=> t.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
 
 if (app.Environment.IsDevelopment())
 {
@@ -35,5 +41,7 @@ var log = new LoggerConfiguration()
 app.MapChatApiV1();
 
 app.MapDefaultEndpoints();
+
+app.UseCors( b => b.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
 
 app.Run();

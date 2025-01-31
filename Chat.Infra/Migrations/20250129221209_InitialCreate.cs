@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Chat.Infra.Migrations
 {
     /// <inheritdoc />
-    public partial class addDefaultToIsArchived : Migration
+    public partial class InitialCreate : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -21,7 +21,12 @@ namespace Chat.Infra.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    UserId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci")
+                    UserId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    Username = table.Column<string>(type: "varchar(50)", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    AvatarUrl = table.Column<string>(type: "varchar(255)", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    CreatedAt = table.Column<DateTime>(type: "datetime", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -52,6 +57,27 @@ namespace Chat.Infra.Migrations
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
+            migrationBuilder.CreateTable(
+                name: "messages",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    ContactId = table.Column<int>(type: "int", nullable: false),
+                    ReadTime = table.Column<DateTime>(type: "datetime(6)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_messages", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_messages_contacts_ContactId",
+                        column: x => x.ContactId,
+                        principalTable: "contacts",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
+
             migrationBuilder.CreateIndex(
                 name: "IX_contacts_UserId",
                 table: "contacts",
@@ -63,11 +89,24 @@ namespace Chat.Infra.Migrations
                 table: "contacts",
                 columns: new[] { "UserId", "ContactUserId" },
                 unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_messages_ContactId",
+                table: "messages",
+                column: "ContactId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_messages_ReadTime",
+                table: "messages",
+                column: "ReadTime");
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropTable(
+                name: "messages");
+
             migrationBuilder.DropTable(
                 name: "contacts");
 
