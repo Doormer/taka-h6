@@ -10,7 +10,7 @@ public class Message : Entity, IAggregateRoot
         ReceiverId = receiverId;
         Content = content;
         SentTime = sentTime;
-        IsRead = false;
+        IsRead = false;  // 默认未读
     }
 
     public Guid SenderId { get; private set; }

@@ -47,12 +47,12 @@ namespace Chat.ApiService
             await base.OnDisconnectedAsync(exception);
         }
 
-        // 发送消息逻辑
+        // 修改发送消息逻辑
         public async Task SendMessage(string targetUserId, string message)
         {
             var senderUserId = _userConnections.FirstOrDefault(x => x.Value == Context.ConnectionId).Key;
 
-            if (!string.IsNullOrEmpty(senderUserId) && _userConnections.TryGetValue(targetUserId, out var connectionId))
+            if (!string.IsNullOrEmpty(senderUserId))
             {
                 try
                 {
@@ -68,9 +68,21 @@ namespace Chat.ApiService
                     _messageRepo.Add(messageEntity);
                     await _messageRepo.UnitOfWork.SaveEntitiesAsync();
 
-                    // 发送实时消息
-                    Console.WriteLine($"Sending message from {senderUserId} to {targetUserId} (Connection ID: {connectionId})");
-                    await Clients.Client(connectionId).SendAsync("ReceiveMessage", senderUserId, message);
+                    // 如果用户在线，直接发送消息并标记为已读
+                    if (_userConnections.TryGetValue(targetUserId, out var connectionId))
+                    {
+                        Console.WriteLine($"Sending message from {senderUserId} to {targetUserId} (Connection ID: {connectionId})");
+                        await Clients.Client(connectionId).SendAsync("ReceiveMessage", senderUserId, message);
+                        
+                        // 标记为已读
+                        messageEntity.MarkAsRead();
+                        _messageRepo.UpdateMessageStatus(messageEntity);
+                        await _messageRepo.UnitOfWork.SaveEntitiesAsync();
+                    }
+                    else
+                    {
+                        Console.WriteLine($"User {targetUserId} is offline, message stored for later delivery");
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -78,24 +90,47 @@ namespace Chat.ApiService
                     throw;
                 }
             }
-            else
-            {
-                Console.WriteLine($"Message not delivered. Either sender or target user is not connected.");
-            }
         }
         
-        // login
-        public void Login(string userId)
+        // 修改登录方法，添加离线消息推送
+        public async Task Login(string userId)
         {
-
             Console.WriteLine($"{userId} trying to login，ConnectionId={Context.ConnectionId}");
+            
             if (!_userConnections.ContainsKey(userId))
             {
                 _userConnections[userId] = Context.ConnectionId;
-
                 Console.WriteLine($"{userId}登录成功，ConnectionId={Context.ConnectionId}");
-            }
 
+                try
+                {
+                    // 获取未读消息
+                    var unreadMessages = await _messageRepo.GetUnreadMessages(Guid.Parse(userId));
+                    
+                    // 推送未读消息
+                    foreach (var message in unreadMessages)
+                    {
+                        await Clients.Client(Context.ConnectionId).SendAsync("ReceiveMessage", 
+                            message.SenderId.ToString(), 
+                            message.Content);
+                        
+                        // 标记消息为已读
+                        message.MarkAsRead();
+                        _messageRepo.UpdateMessageStatus(message);
+                    }
+
+                    if (unreadMessages.Any())
+                    {
+                        await _messageRepo.UnitOfWork.SaveEntitiesAsync();
+                        Console.WriteLine($"Pushed {unreadMessages.Count} offline messages to {userId}");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Error processing offline messages: {ex.Message}");
+                    throw;
+                }
+            }
         }
         
         
