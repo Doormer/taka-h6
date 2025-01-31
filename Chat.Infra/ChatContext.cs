@@ -1,12 +1,17 @@
-﻿using Chat.Domain.AggregateModels.ContactArchivalAggregate;
-using Chat.Domain.SeedWork;
-using Chat.Infra.EntityConfigurations.ArchiveContactAggregate;
-using System.Diagnostics;
+﻿using Chat.Domain.SeedWork;
+using Chat.Domain.AggregateModels.ContactArchivalAggregate;
+//using Chat.Domain.AggregateModels.UnreadMessageAggregate;
 using Contact = Chat.Domain.AggregateModels.ReciprocalContactAggregate.Contact;
+
+using Chat.Infra.EntityConfigurations.ArchiveContactAggregate;
 using ContactEntityTypeConfiguration =
     Chat.Infra.EntityConfigurations.ReciprocalContactAggregate.ContactEntityTypeConfiguration;
-
+//using UnreadMessageEntityTypeConfiguration =
+    //Chat.Infra.EntityConfigurations.UnreadMessageAggregate.UnreadMessageEntityTypeConfiguration;
+using System.Diagnostics;
 namespace Chat.Infra;
+using Chat.Domain.AggregateModels.MessageAggregate;
+using Chat.Infra.EntityConfigurations.MessageAggregate;
 
 public class ChatContext : DbContext, IUnitOfWork
 {
@@ -24,9 +29,11 @@ public class ChatContext : DbContext, IUnitOfWork
 
     public DbSet<Contact> ReciprocalContacts { get; set; }
     public DbSet<ContactArchival> ArchiveContacts { get; set; }
-
+    //public DbSet<UnreadMessage> UnreadMessages { get; set; }
     public DbSet<Domain.AggregateModels.ContactArchivalAggregate.Contact> Contacts { get; set; }
 
+    public DbSet<Domain.QueryEntities.Contact> contactsWithAllInfo { get; set; }
+    public DbSet<Message> Messages { get; set; }
 
     public bool HasActiveTransaction => _currentTransaction != null;
 
@@ -58,6 +65,9 @@ public class ChatContext : DbContext, IUnitOfWork
         modelBuilder.ApplyConfiguration(
             new EntityConfigurations.ArchiveContactAggregate.ContactEntityTypeConfiguration());
         modelBuilder.ApplyConfiguration(new ArchiveContactEntityTypeConfiguration());
+        modelBuilder.ApplyConfiguration(new EntityConfigurations.QueryEntities.ContactEntityTypeConfiguration());
+        //modelBuilder.ApplyConfiguration(new UnreadMessageEntityTypeConfiguration());
+        modelBuilder.ApplyConfiguration(new MessageEntityTypeConfiguration());
     }
 
     public async Task<IDbContextTransaction> BeginTransactionAsync()
