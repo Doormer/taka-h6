@@ -2,8 +2,6 @@ using Microsoft.AspNetCore.SignalR;
 using System.Collections.Concurrent;
 using System;
 using Chat.Domain.AggregateModels.MessageAggregate;
-using Nest;
-using Chat.Domain.QueryEntities;
 
 namespace Chat.ApiService
 {
@@ -13,29 +11,9 @@ namespace Chat.ApiService
         // 使用并发字典存储用户连接信息
         private static readonly ConcurrentDictionary<string, string> _userConnections = new ConcurrentDictionary<string, string>();
 
-
-        private ElasticClient client;
-
-
         public ChatHub(IMessageRepo messageRepo)
         {
             _messageRepo = messageRepo ?? throw new ArgumentNullException(nameof(messageRepo));
-            var settings = new ConnectionSettings(new Uri("http://localhost:9200/"))
-            .DefaultIndex("message") //可以在连接ElasticSearch的时候，就选择Index
-                                  //.BasicAuthentication("elastic", "你的elastic密码")
-                                  // 忽略证书验证，仅用于测试环境，请勿在生产环境中使用
-           .ServerCertificateValidationCallback((sender, certificate, chain, sslPolicyErrors) => true);
-            client = new ElasticClient(settings);
-            var clusterHealth = client.Cluster.Health();
-            if (clusterHealth.IsValid)
-            {
-                //开始执行操作
-                Console.WriteLine($"ElasticSearch连接成功");
-            }
-            else
-            {
-                Console.WriteLine($"ElasticSearch连接失败{clusterHealth.OriginalException.Message}");
-            }
         }
 
         // 连接时处理逻辑
@@ -86,20 +64,9 @@ namespace Chat.ApiService
                         DateTime.UtcNow
                     );
 
-
                     // 保存到数据库
                     _messageRepo.Add(messageEntity);
                     await _messageRepo.UnitOfWork.SaveEntitiesAsync();
-
-                    var addResponse = client.IndexDocument(messageEntity);
-                    if (addResponse.IsValid)
-                    {
-                        Console.WriteLine($"新增ID为{addResponse.Id}的数据成功");
-                    }
-                    else
-                    {
-                        Console.WriteLine($"操作失败:{addResponse.OriginalException.Message}");
-                    }
 
                     // 如果用户在线，直接发送消息并标记为已读
                     if (_userConnections.TryGetValue(targetUserId, out var connectionId))
