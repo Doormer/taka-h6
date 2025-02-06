@@ -1,7 +1,8 @@
 using Chat.ApiService.Application.Behaviors;
 using Chat.ApiService.Application.Commands;
+using Chat.Domain.AggregateModels.MessageAggregate;
 using Microsoft.AspNetCore.Http.HttpResults;
-
+using Nest;
 namespace Chat.ApiService.Apis;
 
 public static class ChatApi
@@ -15,6 +16,8 @@ public static class ChatApi
 
         api.MapPost("/create-contact", AddContactAsync);
         api.MapPost("/archive-contact", ArchiveContactAsync);
+        
+        api.MapPost("/query-message", QueryMessageAsync);
 
         return api;
     }
@@ -68,5 +71,82 @@ public static class ChatApi
         }
 
         return TypedResults.Ok();
+    }
+    
+    public static async Task<List<Message>> QueryMessageAsync(
+
+        //TODO handle idempotency [FromHeader(Name = "x-requestid")] Guid requestId,
+        QueryMessageCommand command,
+        [AsParameters] ChatServices services)
+    {
+        services.Logger.LogInformation(
+            "Sending command: {CommandName} ({@Command})",
+            command.GetGenericTypeName(),
+            command);
+
+        var settings = new ConnectionSettings(new Uri("http://localhost:9200/"))
+            .DefaultIndex("message")
+            //.BasicAuthentication("elastic", "123456")                 
+            .ServerCertificateValidationCallback((sender, certificate, chain, sslPolicyErrors) => true)
+            .EnableDebugMode();
+        var client = new ElasticClient(settings);
+        var clusterHealth = client.Cluster.Health();
+        if (clusterHealth.IsValid)
+        {
+            //开始执行操作
+            Console.WriteLine($"ElasticSearch连接成功");
+        }
+        else
+        {
+            Console.WriteLine($"ElasticSearch连接失败{clusterHealth.OriginalException.Message}");
+        }
+        
+        var searchRequest = new SearchRequest<Message>
+        {   
+            From = 0,
+            Size = 5000,
+            Query = new BoolQuery
+            {
+                Must = new List<QueryContainer>
+                {
+                    new MatchQuery
+                    {
+                        Field = Infer.Field<Message>(f => f.Content),
+                        Query = command.Keyword
+                    },
+                    new BoolQuery
+                    {
+                        Should = new List<QueryContainer>
+                        {
+                            new TermQuery
+                            {
+                                Field = Infer.Field<Message>(f => f.SenderId),
+                                
+                                Value = command.UserId.ToString()
+                            },
+                            new TermQuery
+                            {
+                                Field = Infer.Field<Message>(f => f.ReceiverId),
+                                Value = command.UserId.ToString()
+                            }
+                        }
+                    }
+                },
+                
+            }
+        };
+        
+        var response = await client.SearchAsync<Message>(searchRequest);
+        var debugInformation = response.DebugInformation;
+        Console.WriteLine(debugInformation);
+        
+        if (response.IsValid)
+        {
+            return response.Documents.ToList();
+        }
+        else
+        {
+            throw new Exception("Error occurred while querying Elasticsearch");
+        }
     }
 }
