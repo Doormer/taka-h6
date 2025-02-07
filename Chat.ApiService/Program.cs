@@ -6,17 +6,6 @@ using Chat.Infra.Repositories;
 using Microsoft.AspNetCore.SignalR;
 using Serilog;
 
-using Serilog.Sinks.Http;
-
-// Logstash的HTTP输入端口
-Log.Logger = new LoggerConfiguration()
-    .MinimumLevel.Verbose()
-    .WriteTo.Http(
-        requestUri:"http://localhost:5151",
-        queueLimitBytes: 50 * 1024 * 1024   // 50 MB
-    )
-    .CreateLogger();
-
 var builder = WebApplication.CreateBuilder(args);
 
 // Add service defaults & Aspire client integrations.

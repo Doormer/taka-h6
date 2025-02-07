@@ -68,7 +68,6 @@ namespace Chat.ApiService
                     // 保存到数据库
                     _messageRepo.Add(messageEntity);
                     await _messageRepo.UnitOfWork.SaveEntitiesAsync();
-                    Log.Information("{@Message}", messageEntity);
                     // 如果用户在线，直接发送消息并标记为已读
                     if (_userConnections.TryGetValue(targetUserId, out var connectionId))
                     {
