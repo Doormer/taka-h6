@@ -108,19 +108,19 @@ touch /opt/message.txt
 ```config
 input {
   jdbc {
-    jdbc_driver_library => "/opt/mysql-connector-java-8.0.29.jar"
+    jdbc_driver_library => "/opt/mysql-connector-java-8.0.29.jar" #Step three's file path
     jdbc_driver_class => "com.mysql.cj.jdbc.Driver"
     jdbc_connection_string => "jdbc:mysql://localhost:3306/ChatDb?useUnicode=true&characterEncoding=utf-8&useSSL=false"
     jdbc_user => "root"
-    jdbc_password => "yenngyenng"
+    jdbc_password => "yenngyenng" #Use your own password
     jdbc_default_timezone => "Pacific/Auckland"
-    schedule => "* * * * *"  # 每分钟同步一次，可根据需要调整
+    schedule => "* * * * *"  # Synchronize every minute, adjustable as needed.
     statement => "SELECT Id, SenderId as senderId,receiverId as receiverId, Content as content, SentTime as sentTime, IsRead as isRead FROM messages WHERE DATE_FORMAT(sentTime, '%Y-%m-%d %H:%i:%s') > :sql_last_value"
 	  lowercase_column_names => false
     use_column_value => true
     tracking_column => "sentTime"
     tracking_column_type => "timestamp"
-    last_run_metadata_path => "/opt/message.txt"
+    last_run_metadata_path => "/opt/message.txt" #Step four's file path路径
   }
 }
 
